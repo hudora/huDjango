@@ -5,7 +5,7 @@ tests_with_coverage.py - clone of django.test.simple.run_tests with coverage fun
 Based on http://siddhi.blogspot.com/2007/04/code-coverage-for-your-django-code.html
 
 To use this module put 
-TEST_RUNNER = 'huDjango.tests_with_coverage.run_tests'
+TEST_RUNNER = 'hudjango.tests_with_coverage.run_tests'
 into settings.py.
 
 You can use COVERAGE_MODULES in settings.py to configure for which modules you want want to be analyzed for

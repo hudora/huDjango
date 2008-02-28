@@ -11,7 +11,7 @@ from django.dispatch import dispatcher
 from django.db.models import signals
 from django.contrib.auth.models import User
 
-from huDjango.middleware import threadlocals
+from hudjango.middleware import threadlocals
 
 class UpdatedByField(models.ForeignKey):
     """Stores the currently logged in user on every save."""
