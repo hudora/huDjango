@@ -1,13 +1,11 @@
 """Extended fieldtypes for use with django.
 
-audit             - store inforation about current user and IP
 defaulting        - set default values
 scalingimagefield - ImageField variant  wich scales images on the fly.
 """
 
-from audit import *
-from defaulting import *
-from scalingimagefield import *
+from hudjango.fields.defaulting import *
+from hudjango.fields.scalingimagefield import *
 
 from django.db.models import ManyToManyField
 

@@ -31,7 +31,7 @@ import django.contrib.auth.backends
 class EmailBackend(django.contrib.auth.backends.ModelBackend):
     """
     Authenticate against django.contrib.auth.models.User the same way Django
-    default authentication does except that the users can use their E-Mail
+    does by default except that the users can use their E-Mail
     address instead of the unsername to authenticate. This obviously
     leads to an awful lot of trouble if the E-Mail adresses in your 
     User Database are not unique.
@@ -56,13 +56,13 @@ class EmailBackend(django.contrib.auth.backends.ModelBackend):
 
 class ZimbraBackend(django.contrib.auth.backends.ModelBackend):
     """
-    Authenticate against django.contrib.auth.models.User the same way Django
-    default authentication does except that the users can use their E-Mail
-    address instead of the unsername to authenticate. This obviously
-    leads to an awful lot of trouble if the E-Mail adresses in your 
+    Authenticate against a Zimbra Server via LDAP.
+    
+    Users have to use their full E-Mail adress and Zimbra Passwort to log in.
+    This obviously leads to an awful lot of trouble if the E-Mail adresses in your 
     User Database are not unique.
     
-    The Backend creates a new entry in the Djange User Database if authentication
+    The Backend creates a new entry in the Django User Database if authentication
     against Zimbra is successfull but no matching E-Mail in Django adress is found.
     the new user gets the attribute is_staff = True.
     
