@@ -7,10 +7,13 @@ Copyright (c) 2006-2008 HUDORA GmbH. Consider it BSD licensed.
 
 from django import template
 from django.template import resolve_variable
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
 
+@register.filter
 def format_address(obj):
     """Formats the address in a Lieferung/Lieferschein/Kunde as nice XHTML.
     
@@ -21,18 +24,18 @@ def format_address(obj):
     """
     
     ret = []
-    kdnstr = '<span class="org name1">%s</span>' % obj.name1
+    kdnstr = '<span class="org name1">%s</span>' % escape(obj.name1)
     if hasattr(obj, 'kundennummer') and obj.kundennummer:
-        kdnstr += ' (<span class="customerid">%s</span>)' % obj.kundennummer
+        kdnstr += ' (<span class="customerid">%s</span>)' % escape(obj.kundennummer)
     ret.append(kdnstr)
     for dataname in ['name2', 'name3']:
         data = ''
         if hasattr(obj, dataname):
             data = getattr(obj, dataname)
         if data:
-            ret.append('<span class="%s">%s</span>' % (dataname, data))
+            ret.append('<span class="%s">%s</span>' % (dataname, escape(data)))
     if hasattr(obj, 'iln') and obj.iln:
-        kdnstr += 'ILN <span class="iln">%s</span>' % obj.iln
+        kdnstr += 'ILN <span class="iln">%s</span>' % escape(obj.iln)
     
     ret.append('<span class="adr">')
     for dataname in ['adresse', 'address', 'street', 'strasse']:
@@ -40,28 +43,28 @@ def format_address(obj):
         if hasattr(obj, dataname):
             data = getattr(obj, dataname)
         if data:
-            ret.append('<span class="%s">%s</span>' % (dataname, data))
+            ret.append('<span class="%s">%s</span>' % (dataname, escape(data)))
     if hasattr(obj, 'plz'):
         ortstr = ('<span class="zip postal-code">%s</span>'
-                  ' <span class="city locality">%s</span>' % (obj.plz, obj.ort))
+                  ' <span class="city locality">%s</span>' % (escape(obj.plz), escape(obj.ort)))
     else:
         ortstr = ('<span class="zip postal-code">%s</span>'
-                  ' <span class="city locality">%s</span>' % (obj.postleitzahl, obj.ort))
+                  ' <span class="city locality">%s</span>' % (escape(obj.postleitzahl), escape(obj.ort)))
     land = 'DE'
     if hasattr(obj, 'land'):
         land = obj.land
     else:
         land = obj.laenderkennzeichen
     if land != 'DE':
-        ortstr = ('<span class="country-name land">%s</span>-' % land) + ortstr
+        ortstr = ('<span class="country-name land">%s</span>-' % escape(land)) + ortstr
     ret.append(ortstr)
     ret.append('</span">')
     
     # the whole thing is enclesed in a vcard class tag
-    return '<div class="address vcard">%s</div>' % '<br/>'.join(ret)
-register.filter(format_address)
+    return mark_safe('<div class="address vcard">%s</div>' % '<br/>'.join(ret))
 
 
+@register.filter
 def html_euro(value):
     """
     Formats a value with two decimal digits and adds an Euro sign in HTML entity notation.
@@ -77,10 +80,10 @@ def html_euro(value):
         return value
     except TypeError:
         return value
-    return "%.2f&nbsp;&euro;" % (value)
-register.filter(html_euro)
+    return mark_safe('%.2f&nbsp;&euro;' % (value))
 
 
+@register.filter
 def html_cent(value):
     """
     Formats a value with up to 5 decimal digits and andds an cent sign in HTML entity notation.
@@ -96,10 +99,10 @@ def html_cent(value):
         return value
     except TypeError:
         return value
-    return "%.5f&nbsp;&cent;" % (value)
-register.filter(html_cent)
+    return mark_safe('%.5f&nbsp;&cent;' % (value))
 
 
+@register.filter
 def g2kg(value):
     """
     Convert Gramms to kg by dividing by 1000.
@@ -115,8 +118,7 @@ def g2kg(value):
         return value
     except TypeError:
         return value
-    return "%d" % int(value/1000)
-register.filter(g2kg)
+    return mark_safe('%d' % int(value/1000))
 
 
 class LinkObject(template.Node):
