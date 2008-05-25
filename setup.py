@@ -7,6 +7,7 @@ huDjango contains a collection of small extensions th the Django Web framework.
  * fields.defaulting - Django fields with more elaborate default values
  * templatetags.hudjango - Various template tags to make life more fun.
  * middleware.threadlocals - Thread local storage
+ * validators - some simple validators
 """
 
 from ez_setup import use_setuptools
@@ -25,14 +26,14 @@ hubarcode = setup(name='huDjango',
       maintainer='Maximillian Dornseif',
       maintainer_email='md@hudora.de',
       url='https://cybernetics.hudora.biz/projects/wiki/huDjango',
-      version='0.74',
+      version='0.75',
       description='various snippets for use with Django',
       long_description=long_description,
       classifiers=['License :: OSI Approved :: BSD License',
                    'Intended Audience :: Developers',
                    'Programming Language :: Python'],
       # download_url
-      #packages=['hudjango'],
-      packages = find_packages(),
+      zip_safe=True,
+      packages=find_packages(),
 )
 

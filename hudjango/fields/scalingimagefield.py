@@ -54,6 +54,8 @@ Created August 2006 by Maximillian Dornseif. Consider it BSD licensed.
 import md5, time, os, urlparse
 import Image 
 from django.conf import settings
+from django.utils.html import escape 
+from django.utils.safestring import mark_safe 
 from django.utils.functional import curry
 from django.dispatch import dispatcher
 from django.db.models import ImageField, signals
@@ -195,7 +197,7 @@ class Imagescaler:
         if size.endswith('!'):
             return [int(i) for i in _sizes[size].split('x')]
         return Image.open(self.scaled_filename(size)).size
-
+    
     def scaled_tag(self, size='thumb', *args, **kwargs):
         """Scales an image according to 'size' and returns an XHTML tag for that image.
         
@@ -206,13 +208,13 @@ class Imagescaler:
         """
         if not self.original_image:
             return ''
-        ret = ['<img src="%s"' % self.scaled_url(size)]
+        ret = ['<img src="%s"' % escape(self.scaled_url(size))]
         ret.append('width="%d" height="%d"' % self.scaled_dimensions(size))
         ret.extend(args)
         for key, val in kwargs.items():
-            ret.append('%s="%s"' % (key, val))
+            ret.append('%s="%s"' % (escape(key), escape(val)))
         ret.append('/>')
-        return ' '.join(ret)
+        return mark_safe(' '.join(ret))
 
 
 class ScalingImageField(ImageField):
