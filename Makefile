@@ -2,7 +2,7 @@ build:
 	python setup.py build
 
 upload:
-	python setup.py build sdist bdist_egg upload
+	python setup.py build sdist bdist_egg
 	rsync dist/* root@cybernetics.hudora.biz:/usr/local/www/apache22/data/dist/huDjango/
 
 publish:
