@@ -5,12 +5,25 @@ Created by Maximillian Dornseif on 2006-08-22.
 Copyright (c) 2006-2008 HUDORA GmbH. Consider it BSD licensed.
 """
 
+import urllib
 from django import template
 from django.template import resolve_variable
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
 register = template.Library()
+
+
+@register.filter
+def slashencode(value):
+    """
+    Like Django's urlencode but also encodes slashes.
+    Example::
+    
+        {% 14600/WK|slashencode %} results in 14600%2FWK;
+    """
+    
+    return urllib.quote(value, '')
 
 
 @register.filter
