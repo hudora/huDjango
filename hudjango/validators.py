@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Validatos extending DJANGO.
+"""Validators extending DJANGO.
 
 See http://www.djangoproject.com/documentation/forms/#validators for more documentation on Django's
 validators. Hopfully the validators below are all self explanatory."""
@@ -8,7 +8,12 @@ validators. Hopfully the validators below are all self explanatory."""
 # Coded 2006 by Maximillian Dornseif for HUDORA GmbH
 # You may use this under a "BSD License".
 
-from django.core.validators import ValidationError
+try: 
+    #1.0
+    from django.core.exceptions import ValidationError
+except ImportError:
+    #pre r8616
+    from django.core.validators import ValidationError
 
 
 class IsLessOrEqualThanOtherField(object):
