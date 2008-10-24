@@ -57,7 +57,6 @@ from django.conf import settings
 from django.utils.html import escape 
 from django.utils.safestring import mark_safe 
 from django.utils.functional import curry
-from django.dispatch import dispatcher
 from django.db.models import ImageField, signals
 
 _sizes = {'mini':    "23x40",
@@ -233,7 +232,7 @@ class ScalingImageField(ImageField):
         self.auto_rename = auto_rename
         super(ScalingImageField, self).__init__(verbose_name, name, width_field, height_field, **kwargs)
    
-    def _save(self, instance=None):
+    def _save(self, instance=None, **kwargs):
         """This is called whenever the model containing this field is saved. It renames the image
             to something hard to guess."""
         if not self.auto_rename:
@@ -259,9 +258,8 @@ class ScalingImageField(ImageField):
         """Adds field-related functions to the model."""
         super(ScalingImageField, self).contribute_to_class(cls, name)
         setattr(cls, '%s_scaled' % self.name, curry(Imagescaler, self))
-        #dispatcher.connect(_delete, signals.post_delete, sender=cls)
-        dispatcher.connect(self._save, signals.pre_save, sender=cls)
-   
+        signals.pre_save.connect(self._save, sender=cls)
+        
 
     def get_internal_type(self):
         return 'ImageField'
