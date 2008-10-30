@@ -3,12 +3,12 @@
 from django.template import loader, RequestContext
 from django.http import Http404, HttpResponse
 from django.core.xheaders import populate_xheaders
-from django.core.paginator import ObjectPaginator, InvalidPage
+from django.core.paginator import Paginator, InvalidPage
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.admin.views.decorators import staff_member_required
 
 @staff_member_required
-def object_list(request, queryset, paginate_by=None, page=None,
+def object_list(request, queryset, paginate_by=None, pageno=None,
         allow_empty=False, template_name=None, template_loader=loader,
         extra_context=None, context_processors=None, template_object_name='object',
         mimetype=None):
@@ -27,8 +27,8 @@ def object_list(request, queryset, paginate_by=None, page=None,
             is there a next page?
         has_previous
             is there a prev page?
-        page
-            the current page
+        pageno
+            the number of the current page
         next
             the next page
         previous
@@ -41,12 +41,13 @@ def object_list(request, queryset, paginate_by=None, page=None,
     if extra_context is None: extra_context = {}
     queryset = queryset._clone()
     if paginate_by:
-        paginator = ObjectPaginator(queryset, paginate_by)
-        if not page:
-            page = request.GET.get('page', 1)
+        paginator = Paginator(queryset, paginate_by)
+        if not pageno:
+            pageno = request.GET.get('pageno', 1)
         try:
-            page = int(page)
-            object_list = paginator.get_page(page - 1)
+            pageno = int(pageno)
+            page = paginator.page(pageno)
+            object_list = page.object_list
         except (InvalidPage, ValueError):
             if page == 1 and allow_empty:
                 object_list = []
@@ -54,15 +55,15 @@ def object_list(request, queryset, paginate_by=None, page=None,
                 raise Http404
         c = RequestContext(request, {
             '%s_list' % template_object_name: object_list,
-            'is_paginated': paginator.pages > 1,
+            'is_paginated': paginator.num_pages > 1,
             'results_per_page': paginate_by,
-            'has_next': paginator.has_next_page(page - 1),
-            'has_previous': paginator.has_previous_page(page - 1),
-            'page': page,
-            'next': page + 1,
-            'previous': page - 1,
+            'has_next': page.has_next(),
+            'has_previous': page.has_previous(),
+            'page': page.number,
+            'next': page.number + 1,
+            'previous': page.number - 1,
             'pages': paginator.pages,
-            'hits' : paginator.hits,
+            'hits' : paginator.count,
         }, context_processors)
     else:
         c = RequestContext(request, {
