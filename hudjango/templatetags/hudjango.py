@@ -11,6 +11,8 @@ from django.template import resolve_variable
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
+import operator
+
 register = template.Library()
 
 
@@ -132,6 +134,53 @@ def g2kg(value):
     except TypeError:
         return value
     return mark_safe('%d' % int(value/1000))
+
+
+def _cond_helper(func, arguments):
+    """
+    Helper function for the conditional filters.
+    
+    The arguments are converted to float numbers before
+    the comparison function is applied.
+    
+    >>> _cond_helper(operator.gt, (0, 1))
+    False
+    
+    >>> _cond_helper(operator.gt, (1, 0))
+    True
+    
+    >>> _cond_helper(operator.lt, ("1", 2.3))
+    True
+    
+    >>> _cond_helper(operator.le, ("abc", 0))
+    False
+    
+    """
+    try:
+        numbers = [float(tmp) for tmp in arguments]
+        return func(*numbers)
+    except ValueError:
+        return False
+
+@register.filter(name='lt')
+def lt_filter(value, arg):
+    """Return if the float representation of value is less than the float representation of arg."""
+    return _cond_helper(operator.lt, (value, arg))
+    
+@register.filter(name='le')
+def le_filter(value, arg):
+    """Return if the float representation of value is less than or equal to the float representation of arg."""
+    return _cond_helper(operator.le, (value, arg))
+
+@register.filter(name='gt')
+def gt_filter(value, arg):
+    """Return if the float representation of value is greater than the float representation of arg."""
+    return _cond_helper(operator.gt, (value, arg))
+
+@register.filter(name='ge')
+def ge_filter(value, arg):
+    """Return if the float representation of value is greater than or equal to the float representation of arg."""
+    return _cond_helper(operator.ge, (value, arg))
 
 
 class LinkObject(template.Node):
