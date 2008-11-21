@@ -22,7 +22,7 @@ class DefaultingCharField(models.CharField):
         self.default_from_field = default_from_field
         super(DefaultingCharField, self).__init__(*args, **kwargs)
     
-    def _set_default(self, instance=None):
+    def _set_default(self, instance=None, **kwargs):
         """Will be called by pre_save to set a default value if the attribute is not set."""
         if not self.default_from_field:
             return
@@ -33,7 +33,7 @@ class DefaultingCharField(models.CharField):
     def contribute_to_class(self, cls, name):
         """Adds a pre_save signal handler to ensure we can set the defaults before beeing saved."""
         super(DefaultingCharField, self).contribute_to_class(cls, name)
-        dispatcher.connect(self._set_default, signals.pre_save, sender=cls)
+        signals.pre_save.connect(self._set_default, sender=cls)
     
     def get_internal_type(self):
         return 'CharField'
