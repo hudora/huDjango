@@ -146,8 +146,8 @@ class Imagescaler:
         self.field = field
         self.parent_obj = obj
         self.original_image = getattr(self.parent_obj, self.field.attname)
-        self.original_image_path = os.path.join(settings.MEDIA_ROOT, self.original_image)
-        self.scaled_image_dir = os.path.join(settings.MEDIA_ROOT, ',', self.original_image)
+        self.original_image_path = os.path.join(settings.MEDIA_ROOT, str(self.original_image))
+        self.scaled_image_dir = os.path.join(settings.MEDIA_ROOT, ',', str(self.original_image))
         self.broken_image = None
         # if broken.gif exists we sendd that if there are any problems during scaling
         if not os.path.exists(self.original_image_path):
