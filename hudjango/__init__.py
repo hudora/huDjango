@@ -1,4 +1,77 @@
-"""This module collects several extensions to  Django we found useful at HUDORA.
+"""This module collects several extensions to Django we found useful at HUDORA.
 See http://www.djangoproject.com/ and https://cybernetics.hudora.biz/projects/wiki/huDjango
 
 """
+
+import datetime
+
+
+class PrinterChooser(object):
+    """PrinterChooser allows the user in a HTML form to choose a printer. It remembers the choice.
+    PrinterChooser() must be initialized with
+    
+    * A Django Request Object
+    * A list of possible printer names. The first name is the default choice.
+    * An pptional identifier if you want to use PrinterChooser() for different kinds of printers.
+      We use 'a4', 'a4color' and 'label'.
+    
+    To use it your view must be structured like this:
+    
+        def myview(request):
+            printer = PrinterChooser(request, ('DruckerErikBloodaxe', 'DruckerNapster'), 'label')
+            ...
+            print "Currently selected printer is %s" % printer.name
+            response = render_to_response('huLOG/packstuecke_bearbeiten.html',
+                                          printer.update_context({'lieferung': lieferung}),
+                                          context_instance=RequestContext(request))
+            populate_xheaders(request, response, Sendung, lieferung.id)
+            return printer.update_response(response)
+            
+        
+    In your template do:
+    
+        {% load hudjango %}
+        ...
+        <form ...>
+        {% printer_choice %}
+        ...
+        </form>
+    """
+    
+    def __init__(self, request, choices, name='defaut'):
+        self.request = request
+        self.choices = choices
+        self.classname = name
+    
+    def update_response(self, response):
+        """Updates an django Response Object to set the printer choice.
+        
+        Usually called in the last line of a Django view function:
+            return printer.update_response(render_to_response(...))
+        
+        """
+        printer_choice = self.request.POST.get('printer_choice',
+                                               self.request.POST.get('printer_choice', None))
+        if printer_choice:
+            max_age = 365*24*60*60  # one year
+            expires = datetime.datetime.strftime(datetime.datetime.utcnow() 
+                        + datetime.timedelta(seconds=max_age), "%a, %d-%b-%Y %H:%M:%S GMT")
+            response.set_cookie('printer_choice_%s' % self.classname, printer_choice,
+            max_age=max_age, expires=expires)
+        return response
+    
+    def update_context(self, contextdict={}):
+        """Update a Djangoe template context (dict) in regard to the printer choices.
+        
+        Usually called in a Django view function as a parameter to render_to_response():
+            response = render_to_response('foo.html', printer.update_context({'var1': 'val1', ...}))
+        
+        """
+        contextdict.update({'printer_choice_list': self.choices,
+                            'printer_choice': self.name})
+        return contextdict
+        
+    @property
+    def name(self):
+        """Represents the currently choosen printer name."""
+        return self.request.COOKIES.get('printer_choice_%s' % self.classname, self.choices[0])

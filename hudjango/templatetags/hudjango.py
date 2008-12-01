@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
+Django Template Tags
+
 Created by Maximillian Dornseif on 2006-08-22.
 Copyright (c) 2006-2008 HUDORA GmbH. Consider it BSD licensed.
 """
@@ -169,7 +171,7 @@ def lt_filter(value, arg):
     
 @register.filter(name='le')
 def le_filter(value, arg):
-    """Return if the float representation of value is less than or equal to the float representation of arg."""
+    """Return if the float representation of value is less than or equal to arg."""
     return _cond_helper(operator.le, (value, arg))
 
 @register.filter(name='gt')
@@ -179,7 +181,7 @@ def gt_filter(value, arg):
 
 @register.filter(name='ge')
 def ge_filter(value, arg):
-    """Return if the float representation of value is greater than or equal to the float representation of arg."""
+    """Return if the float representation of value is greater than or equal to arg."""
     return _cond_helper(operator.ge, (value, arg))
 
 
@@ -220,3 +222,43 @@ def do_link_object(dummy, token):
         raise template.TemplateSyntaxError, "%r tag requires a single argument" % token.contents[0]
     return LinkObject(obj)
 register.tag('link_object', do_link_object)
+
+
+class PrinterChoiceNode(template.Node):
+    def __init__(self):
+        self.current_printer = template.Variable('printer_choice')
+        self.printer_list = template.Variable('printer_choice_list')
+    
+    def render(self, context):
+        try:
+            current_printer = self.current_printer.resolve(context)
+        except template.VariableDoesNotExist:
+            current_printer = None
+        try:
+            printer_list = self.printer_list.resolve(context)
+        except template.VariableDoesNotExist:
+            printer_list = ['NullPrinter']
+        print "render", current_printer, printer_list
+        options = []
+        for printer in printer_list:
+            if printer == current_printer:
+                options.append('<option value="%s" selected>%s</option>' % (printer, printer))
+            else:
+                options.append('<option value="%s">%s</option>' % (printer, printer))
+        return '<select name="printer_choice">%s</select>' % ('\n'.join(options))
+
+
+@register.tag
+def printer_choice(dummy, token):
+    """Display a simple printer choice dialog.
+    
+    This is meant to be used in conjunction with hudjango.PrinterChooser. It expects the 
+    variables printer_choice and printer_choice_list to be available in the context.
+    PrinterChooser.update_context can do that automatically. For futher information see the
+    documentation of hudjango.PrinterChooser."""
+    
+    try:
+        dummy = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError("%r tag requires no arguments" % token.contents.split()[0])
+    return PrinterChoiceNode()
