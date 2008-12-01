@@ -12,10 +12,10 @@ upload:
 publish:
 	# remove development tag
 	perl -npe 's/^tag_build = .dev/# tag_build = .dev/' -i setup.cfg
-	svn commit
+	svn commit -m "publishing `grep version= setup.py` to http://pypi.python.org/pypi/"
 	python setup.py build sdist bdist_egg upload
 	# add development tag
-	perl -npe 's/^\# tag_build = .dev/tag_build = .dev/' -i setup.cfg
+	#perl -npe 's/^\# tag_build = .dev/tag_build = .dev/' -i setup.cfg
 	rsync dist/* root@cybernetics.hudora.biz:/usr/local/www/apache22/data/dist/huDjango/
 	echo "now bump version number in setup.py, commit"
 	echo " and update https://cybernetics.hudora.biz/projects/wiki/huDjango"
