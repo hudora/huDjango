@@ -7,11 +7,7 @@ This acts like Django's ImageField but in addition can scale images on demand. S
 If the dimensions there are followed by an '!' this means the images should be cropped to exactly this size.
 Without this the images are scaled to fit in the given size without changing the aspect ratio of the image.
 
-Scaled versions of the images are generated on the fly using PIL. 
-
-In addition it also mangles the filename of the uploaded images to make sure they are unguessable and thus can
-put without authentication on a public webserver as long as directory listings ar prohibitet on that
-webserver.
+Scaled versions of the images are generated on the fly using PIL and then kept arround in the Filesystem. 
 
 Given a model like
 
@@ -223,43 +219,16 @@ class ScalingImageField(ImageField):
     >>> img.path_scaled().svga()
     '/,/-/product/image/0e99d6be8ec0259df920c2d273d1ad6f.jpg/svga.jpeg'
     """
+    
     def __init__(self, verbose_name=None, name=None, width_field=None, height_field=None, auto_rename=True,
                  **kwargs):
-        """Inits the ScalingImageField.
-        
-        By setting auto_rename=False you can keep the original filenames instead of generating pseudo-randomm
-        ones."""
-        self.auto_rename = auto_rename
+        """Inits the ScalingImageField."""
         super(ScalingImageField, self).__init__(verbose_name, name, width_field, height_field, **kwargs)
-   
-    def _save(self, instance=None, **kwargs):
-        """This is called whenever the model containing this field is saved. It renames the image
-            to something hard to guess."""
-        if not self.auto_rename:
-            return
-        if instance == None:
-            return
-        # generate hard to guess name
-        imagepath = getattr(instance, self.attname)
-        if not imagepath:
-            return
-        # generate unguessable name
-        newname = md5.new('sehkr1tt-%r-%r-%r-%r-%r' % (instance.__class__.__name__, self.name, time.time(),
-                           id(self), instance._get_pk_val())).hexdigest() + os.path.splitext(imagepath)[1]
-        newimagepath = os.path.join(os.path.split(imagepath)[0], newname)
-        if not os.path.exists(os.path.join(settings.MEDIA_ROOT, imagepath)):
-            return
-        os.rename(os.path.join(settings.MEDIA_ROOT, imagepath),
-                  os.path.join(settings.MEDIA_ROOT, newimagepath))
-        setattr(instance, self.attname, newimagepath)
     
-
     def contribute_to_class(self, cls, name):
         """Adds field-related functions to the model."""
         super(ScalingImageField, self).contribute_to_class(cls, name)
         setattr(cls, '%s_scaled' % self.name, curry(Imagescaler, self))
-        signals.pre_save.connect(self._save, sender=cls)
-        
-
+    
     def get_internal_type(self):
         return 'ImageField'
