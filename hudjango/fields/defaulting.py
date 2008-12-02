@@ -28,7 +28,7 @@ class DefaultingCharField(models.CharField):
         if not self.default_from_field:
             return
         if not getattr(instance, self.attname):
-            if len(getattr(instance, self.default_from_field)) <= self.maxlength:
+            if len(getattr(instance, self.default_from_field)) <= self.max_length:
                 setattr(instance, self.attname, instance.name)
     
     def contribute_to_class(self, cls, name):
