@@ -12,7 +12,7 @@ class PrinterChooser(object):
     
     * A Django Request Object
     * A list of possible printer names. The first name is the default choice.
-    * An pptional identifier if you want to use PrinterChooser() for different kinds of printers.
+    * An optional identifier if you want to use PrinterChooser() for different kinds of printers.
       We use 'a4', 'a4color' and 'label'.
     
     To use it your view must be structured like this:
@@ -37,41 +37,42 @@ class PrinterChooser(object):
         ...
         </form>
     """
-    
-    def __init__(self, request, choices, name='defaut'):
+
+    def __init__(self, request, choices, name='default'):
         self.request = request
         self.choices = choices
         self.classname = name
-    
+
     def update_response(self, response):
         """Updates an django Response Object to set the printer choice.
-        
+
         Usually called in the last line of a Django view function:
             return printer.update_response(render_to_response(...))
-        
         """
-        printer_choice = self.request.POST.get('printer_choice',
-                                               self.request.POST.get('printer_choice', None))
+
+        printer_choice = self.request.POST.get('printer_choice', 'printer_choice', None)
         if printer_choice:
             max_age = 365*24*60*60  # one year
-            expires = datetime.datetime.strftime(datetime.datetime.utcnow() 
+            expires = datetime.datetime.strftime(datetime.datetime.utcnow()
                         + datetime.timedelta(seconds=max_age), "%a, %d-%b-%Y %H:%M:%S GMT")
             response.set_cookie('printer_choice_%s' % self.classname, printer_choice,
             max_age=max_age, expires=expires)
         return response
-    
+
     def update_context(self, contextdict={}):
-        """Update a Djangoe template context (dict) in regard to the printer choices.
-        
+        """Update a Django template context (dict) in regard to the printer choices.
+
         Usually called in a Django view function as a parameter to render_to_response():
             response = render_to_response('foo.html', printer.update_context({'var1': 'val1', ...}))
-        
         """
+
         contextdict.update({'printer_choice_list': self.choices,
                             'printer_choice': self.name})
         return contextdict
-        
+
     @property
     def name(self):
         """Represents the currently choosen printer name."""
-        return self.request.COOKIES.get('printer_choice_%s' % self.classname, self.choices[0])
+        printer_choice = self.request.POST.get('printer_choice',
+                                               self.request.session.get('printer_choice', self.choices[0]))
+        return printer_choice
