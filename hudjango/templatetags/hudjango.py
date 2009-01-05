@@ -19,6 +19,17 @@ register = template.Library()
 
 
 @register.filter
+def format_location(value, arg):
+    """
+    Formats a myPL location nicely.
+    """
+
+    if len(value) == 6 and str(value).isdigit():
+        return "%s-%s-%s" % (value[:2], value[2:4], value[4:])
+    return locname
+
+
+@register.filter
 def slashencode(value):
     """
     Like Django's urlencode but also encodes slashes.

@@ -50,13 +50,14 @@ class PrinterChooser(object):
             return printer.update_response(render_to_response(...))
         """
 
-        printer_choice = self.request.POST.get('printer_choice', 'printer_choice', None)
+        printer_choice = self.request.POST.get('printer_choice', None)
         if printer_choice:
             max_age = 365*24*60*60  # one year
             expires = datetime.datetime.strftime(datetime.datetime.utcnow()
                         + datetime.timedelta(seconds=max_age), "%a, %d-%b-%Y %H:%M:%S GMT")
             response.set_cookie('printer_choice_%s' % self.classname, printer_choice,
             max_age=max_age, expires=expires)
+            self.request.session['printer_choice'] = printer_choice
         return response
 
     def update_context(self, contextdict={}):
@@ -73,6 +74,10 @@ class PrinterChooser(object):
     @property
     def name(self):
         """Represents the currently choosen printer name."""
-        printer_choice = self.request.POST.get('printer_choice',
-                                               self.request.session.get('printer_choice', self.choices[0]))
+
+        printer_choice = self.request.POST.get('printer_choice')
+        if not printer_choice:
+            printer_choice = self.request.COOKIES.get('printer_choice_%s' % self.classname)
+        if not printer_choice:
+            self.request.session.get('printer_choice', self.choices[0])
         return printer_choice
