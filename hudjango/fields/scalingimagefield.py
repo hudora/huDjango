@@ -53,7 +53,7 @@ from django.conf import settings
 from django.utils.html import escape 
 from django.utils.safestring import mark_safe 
 from django.utils.functional import curry
-from django.db.models import ImageField, signals
+from django.db.models import ImageField
 
 _sizes = {'mini':    "23x40",
           'thumb':   "50x200", 
@@ -119,7 +119,7 @@ def _cropImage(width, height, image):
     res = res.crop((leftx, lefty, rightx, righty))
     return res
 
-class Imagescaler:
+class Imagescaler(object):
     """Class whose instances scale an image on the fly to desired properties.
     
     For each set of dimensions defined in _sizes imagescaler has a set of functions, e.g. for 'small':
@@ -145,7 +145,7 @@ class Imagescaler:
         self.original_image_path = os.path.join(settings.MEDIA_ROOT, str(self.original_image))
         self.scaled_image_dir = os.path.join(settings.MEDIA_ROOT, ',', str(self.original_image))
         self.broken_image = None
-        # if broken.gif exists we sendd that if there are any problems during scaling
+        # if broken.gif exists we send that if there are any problems during scaling
         if not os.path.exists(self.original_image_path):
             self.broken_image = os.path.join(settings.MEDIA_ROOT, 'broken.gif') 
         for size in _sizes:
@@ -214,21 +214,21 @@ class Imagescaler:
 
 class ScalingImageField(ImageField):
     """This acts like Django's ImageField but in addition can scale images on demand by providing an
-    ImageScler object.
+    ImageScaler object.
     
     >>> img.path_scaled().svga()
     '/,/-/product/image/0e99d6be8ec0259df920c2d273d1ad6f.jpg/svga.jpeg'
     """
-    
+
     def __init__(self, verbose_name=None, name=None, width_field=None, height_field=None, auto_rename=True,
                  **kwargs):
         """Inits the ScalingImageField."""
         super(ScalingImageField, self).__init__(verbose_name, name, width_field, height_field, **kwargs)
-    
+
     def contribute_to_class(self, cls, name):
         """Adds field-related functions to the model."""
         super(ScalingImageField, self).contribute_to_class(cls, name)
         setattr(cls, '%s_scaled' % self.name, curry(Imagescaler, self))
-    
+
     def get_internal_type(self):
-        return 'ImageField'
+        return 'FileField'
