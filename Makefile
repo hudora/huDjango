@@ -27,4 +27,8 @@ clean:
 	rm -Rf build dist html test.db
 	find . -name '*.pyc' -or -name '*.pyo' -delete
 
+test:
+	echo 'not implemented'
+	fail_fail_fail_fail
+
 .PHONY: test build clean install upload check
