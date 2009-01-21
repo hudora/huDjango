@@ -73,7 +73,7 @@ def _scaleImage(width, height, image):
     the bounding box.
     """
     #from http://simon.bofh.ms/cgi-bin/trac-django-projects.cgi/file/stuff/branches/magic-removal/image.py
-    lfactor = 1    
+    lfactor = 1
     width, height = int(width), int(height)
     (xsize, ysize) = image.size
     if xsize > width and ysize > height:
@@ -143,7 +143,8 @@ class Imagescaler(object):
         self.parent_obj = obj
         self.original_image = getattr(self.parent_obj, self.field.attname)
         self.original_image_path = os.path.join(settings.MEDIA_ROOT, str(self.original_image))
-        self.scaled_image_dir = os.path.join(settings.MEDIA_ROOT, ',', str(self.original_image))
+        self.mangled_name = md5.new('sehkr1tt-%s-%r-%r' % (str(self.original_image), time.time(), id(self))).hexdigest()
+        self.scaled_image_dir = os.path.join(settings.MEDIA_ROOT, ',', self.mangled_name)
         self.broken_image = None
         # if broken.gif exists we send that if there are any problems during scaling
         if not os.path.exists(self.original_image_path):
@@ -153,7 +154,7 @@ class Imagescaler(object):
             setattr(self, '%s' % (size), curry(self.scaled_url, size))
             setattr(self, '%s_dimensions' % (size), curry(self.scaled_dimensions, size))
             setattr(self, '%s_tag' % (size), curry(self.scaled_tag, size))
-    
+
     def scaled_filename(self, size='thumb'):
         """Scales an image according to 'size' and returns the filename of the scaled image."""
         if self.broken_image:
@@ -172,9 +173,11 @@ class Imagescaler(object):
                 img = _cropImage(width, height, img)
             else:
                 img = _scaleImage(width, height, img)
+            if img.mode != "RGB":
+                img = img.convert("RGB")
             img.save(outpath, "JPEG")
         return outpath
-    
+
     def scaled_url(self, size='thumb'):
         """Scales an image according to 'size' and returns the URL of the scaled image."""
         if not self.original_image:
