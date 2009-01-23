@@ -207,7 +207,10 @@ class Imagescaler(object):
         if not self.original_image:
             return ''
         ret = ['<img src="%s"' % escape(self.scaled_url(size))]
-        ret.append('width="%d" height="%d"' % self.scaled_dimensions(size))
+        try:
+            ret.append('width="%d" height="%d"' % self.scaled_dimensions(size))
+        except:
+            ret.append('width="50" height="50" alt="Fehler bei der Groessenberechnung" ')
         ret.extend(args)
         for key, val in kwargs.items():
             ret.append('%s="%s"' % (escape(key), escape(val)))
