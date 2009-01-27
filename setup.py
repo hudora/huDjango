@@ -26,7 +26,7 @@ hubarcode = setup(name='huDjango',
       maintainer='Maximillian Dornseif',
       maintainer_email='md@hudora.de',
       url='https://cybernetics.hudora.biz/projects/wiki/huDjango',
-      version='0.80'
+      version='0.80',
       description='various snippets for use with Django',
       long_description=long_description,
       classifiers=['License :: OSI Approved :: BSD License',
