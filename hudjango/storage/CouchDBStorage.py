@@ -1,3 +1,9 @@
+"""
+This is a Custom Storage System for Django with CouchDB backend.
+Created by Christian Klein.
+(c) Copyright 2009 HUDORA GmbH. All Rights Reserved. 
+"""
+
 from django.core.files.storage import Storage
 from django.conf import settings
 from django.core.files import File
@@ -10,10 +16,14 @@ from urllib import quote_plus
 from os.path import join
 
 
-DEFAULT_SERVER = "http://boingball.local.hudora.biz:5984"
+DEFAULT_SERVER = "http://couchdb.local:5984"
 
 
 class CouchDBFile(File):
+    """
+    CouchDBFile - a Django File-like class for CouchDB documents.
+    """
+
     def __init__(self, name, storage, mode):
         self._name = name
         self._storage = storage
@@ -57,7 +67,9 @@ class CouchDBStorage(Storage):
     Alternatively, the configuration can be passed as a parameter 'option' as a dictionary.
     """
     def __init__(self, option=None):
-        config = settings.COUCHDB_STORAGE_OPTIONS
+        config = {}
+        if hasattr(settings, "COUCHDB_STORAGE_OPTIONS"):
+            config.upate(settings.COUCHDB_STORAGE_OPTIONS)
         if option:
             config.update(option)
         self.base_url = config.get('server', DEFAULT_SERVER)
