@@ -130,13 +130,13 @@ class Imagescaler(object):
     o.small_tag() - return a complete image tag for use in XHTML
     
     >>> img.path_scaled().svga()
-    '/,/-/product/image/0e99d6be8ec0259df920c2d273d1ad6f.jpg/svga.jpeg'
+    '/,/-/product/image/0e99d6be8ec0259df920c2d273d1ad6f.jpg_svga.jpeg'
     >>> img.path_scaled().svga_path()
-    '/usr/local/web/media/,/-/product/image/0e99d6be8ec0259df920c2d273d1ad6f.jpg/svga.jpeg'
+    '/usr/local/web/media/,/-/product/image/0e99d6be8ec0259df920c2d273d1ad6f.jpg_svga.jpeg'
     >>> img.path_scaled().svga_dimensions()
     (328, 600)
     >>> img.path_scaled().svga_tag()
-    '<img src="/,/-/product/image/0e99d6be8ec0259df920c2d273d1ad6f.jpg/svga.jpeg" width="328" height="600" />'
+    '<img src="/,/-/product/image/0e99d6be8ec0259df920c2d273d1ad6f.jpg_svga.jpeg" width="328" height="600" />'
     """
     def __init__(self, field, obj):
         self.field = field
@@ -144,7 +144,7 @@ class Imagescaler(object):
         self.original_image = getattr(self.parent_obj, self.field.attname)
         self.original_image_path = os.path.join(settings.MEDIA_ROOT, str(self.original_image))
         self.mangled_name = md5.new('sehkr1tt-%s-%r-%r' % (str(self.original_image), time.time(), id(self))).hexdigest()
-        self.scaled_image_dir = os.path.join(settings.MEDIA_ROOT, ',', self.mangled_name)
+        self.scaled_image_base = os.path.join(settings.MEDIA_ROOT, ',', self.mangled_name)
         self.broken_image = None
         # if broken.gif exists we send that if there are any problems during scaling
         if not os.path.exists(self.original_image_path):
@@ -159,14 +159,12 @@ class Imagescaler(object):
         """Scales an image according to 'size' and returns the filename of the scaled image."""
         if self.broken_image:
             return self.broken_image
-        outpath = os.path.join(self.scaled_image_dir, size + '.jpeg')
+        outpath = "%s_%s.jpeg" % (self.scaled_image_base, size)
         if not os.path.exists(outpath):
             if size not in _sizes:
                 width, height = size.split('x')
             else:
                 width, height = _sizes[size].split('x')
-            if not os.path.exists(self.scaled_image_dir):
-                os.makedirs(self.scaled_image_dir)
             img = Image.open(self.original_image_path)
             if height.endswith('!'):
                 height = height.strip('!')
