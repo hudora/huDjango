@@ -13,7 +13,7 @@ import couchdb.client
 
 from urlparse import urljoin
 from urllib import quote_plus
-from os.path import join
+import os.path
 
 
 DEFAULT_SERVER = "http://couchdb.local:5984"
@@ -32,7 +32,13 @@ class CouchDBFile(File):
 
         try:
             self._doc = self._storage.get_document(name)
-            attachment = self._storage.db.get_attachment(self._doc, filename='content')
+
+            tmp, ext = os.path.split(name)
+            if ext:
+                filename = "content." + ext
+            else:
+                filename = "content"
+            attachment = self._storage.db.get_attachment(self._doc, filename=filename)
             self.file = StringIO(attachment)
         except couchdb.client.ResourceNotFound:
             if 'r' in self._mode:
@@ -106,7 +112,7 @@ class CouchDBStorage(Storage):
         return 0
 
     def url(self, name):
-        return urljoin(self.base_url, join(quote_plus(self.db.name), quote_plus(name), 'content'))
+        return urljoin(self.base_url, os.path.join(quote_plus(self.db.name), quote_plus(name), 'content'))
 
     def delete(self, name):
         try:
