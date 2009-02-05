@@ -143,7 +143,7 @@ class Imagescaler(object):
         self.parent_obj = obj
         self.original_image = getattr(self.parent_obj, self.field.attname)
         self.original_image_path = os.path.join(settings.MEDIA_ROOT, str(self.original_image))
-        self.mangled_name = md5.new('sehkr1tt-%s-%r-%r' % (str(self.original_image), time.time(), id(self))).hexdigest()
+        self.mangled_name = str(self.original_image) # md5.new('sehkr1tt-%s-%r-%r' % (str(self.original_image), time.time(), id(self))).hexdigest()
         self.scaled_image_base = os.path.join(settings.MEDIA_ROOT, ',', self.mangled_name)
         self.broken_image = None
         # if broken.gif exists we send that if there are any problems during scaling
