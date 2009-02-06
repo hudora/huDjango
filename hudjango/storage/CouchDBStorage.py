@@ -72,12 +72,11 @@ class CouchDBStorage(Storage):
 
     Alternatively, the configuration can be passed as a parameter 'option' as a dictionary.
     """
-    def __init__(self, option=None):
+    def __init__(self, **kwargs):
         config = {}
         if hasattr(settings, "COUCHDB_STORAGE_OPTIONS"):
             config.upate(settings.COUCHDB_STORAGE_OPTIONS)
-        if option:
-            config.update(option)
+        config.update(kwargs)
         self.base_url = config.get('server', DEFAULT_SERVER)
         server = couchdb.client.Server(self.base_url)
         self.db = server[config.get('database')]
