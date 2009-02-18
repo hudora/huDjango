@@ -200,7 +200,7 @@ class LinkObject(template.Node):
     """Helper class for do_link_object()."""
     
     def __init__(self, obj):
-        super(LinkObject, self).__init__(obj)
+        super(LinkObject, self).__init__()
         self.obj = obj
     
     def render(self, context):
