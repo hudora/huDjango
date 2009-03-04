@@ -1,1 +1,1 @@
-See http://hosted-projects.com/trac/hudora/public/
+See http://cybernetics.hudora.biz/projects/wiki/huDjango
