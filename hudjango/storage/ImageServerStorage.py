@@ -9,6 +9,7 @@ from cStringIO import StringIO
 import hashlib
 import base64
 import os
+import huimages
 from PIL import Image
 
 
@@ -16,13 +17,15 @@ class ImageServerStorage(CouchDBStorage):
     """
     ImageServerStorage - a Django Storage class for the huDjango ImageServer.
     """
-
+    
+    def __init__(self, **kwargs):
+        pass
+        
     def _put_file(self, name, content):
-        image = Image.open(StringIO(content))
-        width, height = image.size
-        doc_id = "%s01" % base64.b32encode(hashlib.md5(content).digest())
-        self.db[doc_id] = {'name': name, 'size': len(content), 'height': height, 'width': width}
-        self.db.put_attachment(self.db[doc_id], content, filename='content.%s' % os.path.splitext(name)[1])
-
+        return huimages.save_image(content, filename=name, typ='product_image')
+    
+    def get_document(self, name):
+        raise NotImplementedError
+    
     def delete(self, name):
         raise IOError("ImageServerStorage is not intended to support delete()")

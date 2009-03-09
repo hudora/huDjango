@@ -26,14 +26,16 @@ hubarcode = setup(name='huDjango',
       maintainer='Maximillian Dornseif',
       maintainer_email='md@hudora.de',
       url='https://cybernetics.hudora.biz/projects/wiki/huDjango',
-      version='0.81',
+      version='0.82',
       description='various snippets for use with Django',
       long_description=long_description,
       classifiers=['License :: OSI Approved :: BSD License',
                    'Intended Audience :: Developers',
                    'Programming Language :: Python'],
-      # download_url
       zip_safe=True,
       packages=find_packages(),
+      install_requires=['Django>=1.0.2', 'huimages'],
+      dependency_links = ['http://cybernetics.hudora.biz/dist/',
+                          'http://cybernetics.hudora.biz/nonpublic/eggs/'],
 )
 

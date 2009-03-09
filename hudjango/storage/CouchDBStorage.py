@@ -84,6 +84,7 @@ class CouchDBStorage(Storage):
     def _put_file(self, name, content):
         self.db[name] = {'size': len(content)}
         self.db.put_attachment(self.db[name], content, filename='content')
+        return name
 
     def get_document(self, name):
         return self.db.get(name)
@@ -98,8 +99,7 @@ class CouchDBStorage(Storage):
             content_str = ''.join(chunk for chunk in content.chunks())
         else:
             content_str = content.read()
-        self._put_file(name, content_str)
-        return name
+        return self._put_file(name, content_str)
 
     def exists(self, name):
         return name in self.db
