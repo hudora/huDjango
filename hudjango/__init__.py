@@ -36,6 +36,8 @@ class PrinterChooser(object):
         {% printer_choice %}
         ...
         </form>
+        
+    See http://static.23.nu/md/Pictures/ZZ5FB43EF0.png for an example.
     """
 
     def __init__(self, request, choices, name='default'):
