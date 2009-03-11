@@ -7,13 +7,15 @@ Created by Maximillian Dornseif on 2006-08-22.
 Copyright (c) 2006-2008 HUDORA GmbH. Consider it BSD licensed.
 """
 
+import huimages
+import operator
 import urllib
 from django import template
 from django.template import resolve_variable
 from django.utils.html import escape
+from django.utils.text import smart_split
 from django.utils.safestring import mark_safe
 
-import operator
 
 register = template.Library()
 
@@ -273,3 +275,60 @@ def printer_choice(dummy, token):
     except ValueError:
         raise template.TemplateSyntaxError("%r tag requires no arguments" % token.contents.split()[0])
     return PrinterChoiceNode()
+
+
+class ImageLink(template.Node):
+    """Helper class for rendering do_imageid()."""
+    
+    def __init__(self, obj, options):
+        super(ImageLink, self).__init__()
+        self.obj = obj
+        self.options = options
+    
+    def render(self, context):
+        """Called when the page is actually rendered."""
+        obj = resolve_variable(self.obj, context)
+        imageid = getattr('name', obj, obj)
+        if self.options.get('urlonly', False):
+            unicode(huimages.imageurl(imageid))
+        else:
+            if self.options.get('nolink', False):
+                return huimages.scaled_tag(imageid, self.options.get('size', '1024x768'))
+            else:
+                return unicode('<a class="imagelink" href="%s">%s</a>' % (huimages.imageurl(imageid),
+                    huimages.scaled_tag(imageid, self.options.get('size', '1024x768'))))
+    
+
+def do_imageid(dummy, token):
+    """Renders an Imagetag by ImageID. See pydoc huimages for information about ImageID.
+       
+       Syntax: {% imageid <imageid> <size> [nolink] [urlonly] %}
+       
+       See huimages for further Documentation on size.
+       
+       Example::
+       
+           {% imageid spare.bild "320x240" %} 
+           <a class="imagelink" href="http://i.hdimg.net/o/TZGBY4PX2BXMKXXGNMYHZBVYZXSJBOLT01.jpeg"><img src="http://i.hdimg.net/320x240/TZGBY4PX2BXMKXXGNMYHZBVYZXSJBOLT01.jpeg" /></a>
+           
+           {% imageid "DEQOQMIPRJPPTAKLE3NQY5BTMMNTFGG201" "320x240" nolink %} 
+           <img src="http://i.hdimg.net/320x240/DEQOQMIPRJPPTAKLE3NQY5BTMMNTFGG201.jpeg" />
+           
+           {% imageid spare.bild.name "150x150!" urlonly %} 
+           http://i.hdimg.net/150x150!/TZGBY4PX2BXMKXXGNMYHZBVYZXSJBOLT01.jpeg
+    """
+    options = {'urlonly': False, 'nolink': False, 'size': '1024x768'}
+    try:
+        tokens = list(smart_split(token.contents))
+        print tokens
+        tag_name, obj = tokens[:2]
+        if len(tokens) > 2:
+            options['size'] = tokens[2].strip('"\'')
+        for option in tokens[2:]:
+            if option.strip('"\'') == 'urlonly':
+                options['urlonly'] = True
+    except ValueError:
+        raise template.TemplateSyntaxError, "%r tag requires a single argument" % token.contents.split()[0]
+    return ImageLink(obj, options)
+register.tag('imageid', do_imageid)
+

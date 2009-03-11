@@ -1,6 +1,7 @@
 CHANGES in huDjango
 
 0.82 improved ImageServerStorage
+     implemented template tag "imageid"
 
 0.81 added ClientTrackMiddleware
 
