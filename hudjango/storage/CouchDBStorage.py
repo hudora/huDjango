@@ -1,7 +1,7 @@
 """
 This is a Custom Storage System for Django with CouchDB backend.
 Created by Christian Klein.
-(c) Copyright 2009 HUDORA GmbH. All Rights Reserved. 
+(c) Copyright 2009 HUDORA GmbH. All Rights Reserved.
 """
 
 from django.core.files.storage import Storage
@@ -72,10 +72,11 @@ class CouchDBStorage(Storage):
 
     Alternatively, the configuration can be passed as a parameter 'option' as a dictionary.
     """
+
     def __init__(self, **kwargs):
         config = {}
         if hasattr(settings, "COUCHDB_STORAGE_OPTIONS"):
-            config.upate(settings.COUCHDB_STORAGE_OPTIONS)
+            config.update(settings.COUCHDB_STORAGE_OPTIONS)
         config.update(kwargs)
         self.base_url = config.get('server', DEFAULT_SERVER)
         server = couchdb.client.Server(self.base_url)
@@ -99,6 +100,7 @@ class CouchDBStorage(Storage):
             content_str = ''.join(chunk for chunk in content.chunks())
         else:
             content_str = content.read()
+        name = name.replace('/', '-')
         return self._put_file(name, content_str)
 
     def exists(self, name):

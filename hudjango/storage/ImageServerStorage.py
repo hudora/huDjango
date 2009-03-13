@@ -1,16 +1,12 @@
 """
 This is a Custom Storage System for Django with CouchDB backend.
 Created by Christian Klein.
-(c) Copyright 2009 HUDORA GmbH. All Rights Reserved. 
+(c) Copyright 2009 HUDORA GmbH. All Rights Reserved.
 """
 
 from hudjango.storage.CouchDBStorage import CouchDBStorage
-from cStringIO import StringIO
-import hashlib
-import base64
 import os
 import huimages
-from PIL import Image
 
 
 class ImageServerStorage(CouchDBStorage):
