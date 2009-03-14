@@ -327,6 +327,8 @@ def do_imageid(dummy, token):
         for option in tokens[2:]:
             if option.strip('"\'') == 'urlonly':
                 options['urlonly'] = True
+            if option.strip('"\'') == 'nolink':
+                options['nolink'] = True
     except ValueError:
         raise template.TemplateSyntaxError, "%r tag requires a single argument" % token.contents.split()[0]
     return ImageLink(obj, options)
