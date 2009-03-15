@@ -57,6 +57,6 @@ class ClientTrackMiddleware(object):
             max_age = 3*365*24*60*60  # 3 years
             expires_time = time.time() + max_age
             expires = cookie_date(expires_time)
-            response.set_cookie('_hda', "%d,%s,%f" % (request.clienttrack_first_visit, request.clienttrack_uid, time.time()),
+            response.set_cookie('_hda', "%s,%s,%f" % (request.clienttrack_first_visit, request.clienttrack_uid, time.time()),
                                 max_age=max_age, expires=expires)
         return response
