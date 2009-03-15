@@ -288,7 +288,7 @@ class ImageLink(template.Node):
     def render(self, context):
         """Called when the page is actually rendered."""
         obj = resolve_variable(self.obj, context)
-        imageid = getattr('name', obj, obj)
+        imageid = getattr(obj, 'name', obj)
         if self.options.get('urlonly', False):
             unicode(huimages.imageurl(imageid))
         else:

@@ -50,7 +50,7 @@ class ClientTrackMiddleware(object):
             request.clienttrack_last_visit = request.clienttrack_first_visit = None
     
     def process_response(self, request, response):
-        if (not getattr('clienttrack_prohibit', request, False)) or not request.clienttrack_first_visit:
+        if (not getattr(request, 'clienttrack_prohibit', False)) or not request.clienttrack_first_visit:
             # even if clienttrack_prohibit is True, we we set the cookie for first time visitors. 
             if not request.clienttrack_first_visit:
                 request.clienttrack_first_visit = time.time()

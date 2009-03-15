@@ -15,10 +15,12 @@ class ImageServerStorage(CouchDBStorage):
     """
     
     def __init__(self, **kwargs):
-        pass
+        self.typ = kwargs.get('type', None)
         
     def _put_file(self, name, content):
-        return huimages.save_image(content, filename=name, typ='product_image')
+        if self.typ:
+            return huimages.save_image(content, filename=name, typ=self.typ)
+        return huimages.save_image(content, filename=name)
     
     def exists(self, name):
         try:

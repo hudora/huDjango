@@ -24,7 +24,7 @@ install: build
 	sudo python setup.py install
 
 clean:
-	rm -Rf build dist html test.db
-	find . -name '*.pyc' -or -name '*.pyo' -delete
+	sudo rm -Rf build dist html test.db huDjango.egg-info
+	sudo find . -name '*.pyc' -or -name '*.pyo' -delete
 
 .PHONY: test build clean install upload check
