@@ -1,5 +1,7 @@
 CHANGES in huDjango
 
+0.83 require_login decorator added
+
 0.82 improved ImageServerStorage
      implemented template tag "imageid"
 
