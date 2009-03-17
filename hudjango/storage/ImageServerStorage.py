@@ -5,7 +5,6 @@ Created by Christian Klein.
 """
 
 from hudjango.storage.CouchDBStorage import CouchDBStorage
-import os
 import huimages
 
 

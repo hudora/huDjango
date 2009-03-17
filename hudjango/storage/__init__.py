@@ -1,2 +1,2 @@
-from CouchDBStorage import CouchDBStorage, CouchDBFile
-from ImageServerStorage import ImageServerStorage
+from hudjango.storage.CouchDBStorage import CouchDBStorage, CouchDBFile
+from hudjango.storage.ImageServerStorage import ImageServerStorage

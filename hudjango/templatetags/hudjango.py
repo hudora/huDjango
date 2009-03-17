@@ -25,10 +25,10 @@ def format_location(value, arg):
     """
     Formats a myPL location nicely.
     """
-
+    
     if len(value) == 6 and str(value).isdigit():
         return "%s-%s-%s" % (value[:2], value[2:4], value[4:])
-    return locname
+    return value
 
 
 @register.filter
@@ -176,21 +176,25 @@ def _cond_helper(func, arguments):
         return func(*numbers)
     except ValueError:
         return False
+    
 
 @register.filter(name='lt')
 def lt_filter(value, arg):
     """Return if the float representation of value is less than the float representation of arg."""
     return _cond_helper(operator.lt, (value, arg))
     
+
 @register.filter(name='le')
 def le_filter(value, arg):
     """Return if the float representation of value is less than or equal to arg."""
     return _cond_helper(operator.le, (value, arg))
+    
 
 @register.filter(name='gt')
 def gt_filter(value, arg):
     """Return if the float representation of value is greater than the float representation of arg."""
     return _cond_helper(operator.gt, (value, arg))
+    
 
 @register.filter(name='ge')
 def ge_filter(value, arg):
@@ -238,6 +242,7 @@ register.tag('link_object', do_link_object)
 
 
 class PrinterChoiceNode(template.Node):
+    
     def __init__(self):
         self.current_printer = template.Variable('printer_choice')
         self.printer_list = template.Variable('printer_choice_list')
@@ -289,6 +294,8 @@ class ImageLink(template.Node):
         """Called when the page is actually rendered."""
         obj = resolve_variable(self.obj, context)
         imageid = getattr(obj, 'name', obj)
+        if not imageid:
+            return ''
         if self.options.get('urlonly', False):
             unicode(huimages.imageurl(imageid))
         else:
@@ -321,7 +328,7 @@ def do_imageid(dummy, token):
     try:
         tokens = list(smart_split(token.contents))
         print tokens
-        tag_name, obj = tokens[:2]
+        dummy, obj = tokens[:2]
         if len(tokens) > 2:
             options['size'] = tokens[2].strip('"\'')
         for option in tokens[2:]:
@@ -333,4 +340,3 @@ def do_imageid(dummy, token):
         raise template.TemplateSyntaxError, "%r tag requires a single argument" % token.contents.split()[0]
     return ImageLink(obj, options)
 register.tag('imageid', do_imageid)
-

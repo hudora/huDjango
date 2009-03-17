@@ -9,6 +9,7 @@ Copyright (c) 2009 HUDORA. All rights reserved.
 
 from functools import wraps
 from django.contrib.auth import authenticate, login
+from django.http import HttpResponse
 
 def require_login(func):
     """This decorator logs in a user via HTTP-Auth."""
