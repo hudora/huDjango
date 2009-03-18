@@ -24,6 +24,7 @@ def require_login(func):
                 if user:
                     if user.is_active:
                         login(request, user)
+                        return func(request, *args, **kwargs)
                     else:
                         return HttpResponse('disabled account', status=403)
                 else:
@@ -36,5 +37,4 @@ def require_login(func):
             response = HttpResponse('Authentication required', status=401)
             response['WWW-Authenticate'] = 'Basic realm="HUDORA Internal"'
             return response
-        return func(request, *args, **kwargs)
     return _decorator
