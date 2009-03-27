@@ -297,7 +297,7 @@ class ImageLink(template.Node):
         if not imageid:
             return ''
         if self.options.get('urlonly', False):
-            unicode(huimages.imageurl(imageid))
+            return unicode(huimages.imageurl(imageid))
         else:
             if self.options.get('nolink', False):
                 return huimages.scaled_tag(imageid, self.options.get('size', '1024x768'))
