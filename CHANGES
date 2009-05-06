@@ -1,5 +1,7 @@
 CHANGES in huDjango
 
+0.84 added format_addressproto, more robust clienttracking
+
 0.83p2 don't generate links for empty image IDs, fixed {% imageid ... urlonly %} templatetag
 
 0.83 require_login decorator added

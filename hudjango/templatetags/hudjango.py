@@ -12,7 +12,7 @@ import operator
 import urllib
 from django import template
 from django.template import resolve_variable
-from django.utils.html import escape
+from django.utils.html import escape, conditional_escape
 from django.utils.text import smart_split
 from django.utils.safestring import mark_safe
 
@@ -44,7 +44,7 @@ def slashencode(value):
 
 
 @register.filter
-def format_address(obj):
+def format_address(obj, autoescape=None):
     """Formats the address in a Lieferung/Lieferschein/Kunde as nice XHTML.
     
     The obj must follow the address-protocol outlined at
@@ -54,18 +54,25 @@ def format_address(obj):
     """
     
     ret = []
-    kdnstr = '<span class="org name1">%s</span>' % escape(obj.name1)
-    if hasattr(obj, 'kundennummer') and obj.kundennummer:
-        kdnstr += ' (<span class="customerid">%s</span>)' % escape(obj.kundennummer)
+    if autoescape:
+        esc = conditional_escape
+    else:
+        esc = lambda x: x
+    
+    kdnstr = '<span class="org name1">%s</span>' % esc(obj.name1)
+    if hasattr(obj, 'kundennr') and obj.kundennr:
+        kdnstr += ' (<span class="customerid">%s</span>)' % esc(obj.kundennr)
+    if hasattr(obj, 'kundennummer') and obj.kundennummer: # TODO: remove support for kundennummer (legacy)
+        kdnstr += ' (<span class="customerid">%s</span>)' % esc(obj.kundennummer)
     ret.append(kdnstr)
     for dataname in ['name2', 'name3']:
         data = ''
         if hasattr(obj, dataname):
             data = getattr(obj, dataname)
         if data:
-            ret.append('<span class="%s">%s</span>' % (dataname, escape(data)))
+            ret.append('<span class="%s">%s</span>' % (dataname, esc(data)))
     if hasattr(obj, 'iln') and obj.iln:
-        kdnstr += 'ILN <span class="iln">%s</span>' % escape(obj.iln)
+        kdnstr += 'ILN <span class="iln">%s</span>' % esc(obj.iln)
     
     ret.append('<span class="adr">')
     for dataname in ['adresse', 'address', 'street', 'strasse']:
@@ -73,25 +80,98 @@ def format_address(obj):
         if hasattr(obj, dataname):
             data = getattr(obj, dataname)
         if data:
-            ret.append('<span class="%s">%s</span>' % (dataname, escape(data)))
+            ret.append('<span class="%s">%s</span>' % (dataname, esc(data)))
     if hasattr(obj, 'plz'):
         ortstr = ('<span class="zip postal-code">%s</span>'
-                  ' <span class="city locality">%s</span>' % (escape(obj.plz), escape(obj.ort)))
+                  ' <span class="city locality">%s</span>' % (esc(obj.plz), esc(obj.ort)))
     else:
         ortstr = ('<span class="zip postal-code">%s</span>'
-                  ' <span class="city locality">%s</span>' % (escape(obj.postleitzahl), escape(obj.ort)))
+                  ' <span class="city locality">%s</span>' % (esc(obj.postleitzahl), esc(obj.ort)))
     land = 'DE'
     if hasattr(obj, 'land'):
         land = obj.land
     else:
         land = obj.laenderkennzeichen
     if land != 'DE':
-        ortstr = ('<span class="country-name land">%s</span>-' % escape(land)) + ortstr
+        ortstr = ('<span class="country-name land">%s</span>-' % esc(land)) + ortstr
     ret.append(ortstr)
     ret.append('</span">')
     
     # the whole thing is enclesed in a vcard class tag
     return mark_safe('<div class="address vcard">%s</div>' % '<br/>'.join(ret))
+format_address.needs_autoescape = True
+
+
+@register.filter
+def format_addressproto(obj, autoescape=None):
+    """Formats the address as nice XHTML. Includes telephone number and the like.
+    
+    The obj must follow the address-protocol outlined at
+    http://cybernetics.hudora.biz/projects/wiki/AddressProtocol
+    
+    The generated XHTML follows hCard described at http://microformats.org/wiki/hcard
+    """
+    
+    ret = []
+    if autoescape:
+        esc = conditional_escape
+    else:
+        esc = lambda x: x
+    
+    kdnstr = '<span class="org name1">%s</span>' % esc(obj.name1)
+    if hasattr(obj, 'kundennr') and obj.kundenr:
+        kdnstr += ' (<span class="customerid">%s</span>)' % esc(obj.kundenr)
+    elif hasattr(obj, 'softmid') and obj.softmid:
+        kdnstr += ' (<span class="customerid">SC%s</span>)' % esc(obj.softmid)
+    elif hasattr(obj, 'curmid') and obj.curmid:
+        kdnstr += ' (<span class="customerid">%s</span>)' % esc(obj.curmid)
+    ret.append(kdnstr)
+    
+    for dataname in ['name2', 'name3']:
+        data = ''
+        if hasattr(obj, dataname):
+            data = getattr(obj, dataname)
+        if data:
+            ret.append('<span class="%s">%s</span>' % (dataname, esc(data)))
+    
+    if hasattr(obj, 'iln') and obj.iln:
+        kdnstr += 'ILN <span class="iln">%s</span>' % esc(obj.iln)
+    
+    addr = []
+    for dataname in ['adresse', 'address', 'street', 'strasse']:
+        data = ''
+        if hasattr(obj, dataname):
+            data = getattr(obj, dataname)
+        if data:
+            addr.append('<span class="%s">%s</span>' % (dataname, esc(data)))
+    if hasattr(obj, 'plz'):
+        ortstr = ('<span class="zip postal-code">%s</span>'
+                  ' <span class="city locality">%s</span>' % (esc(obj.plz), esc(obj.ort)))
+    else:
+        ortstr = ('<span class="zip postal-code">%s</span>'
+                  ' <span class="city locality">%s</span>' % (esc(obj.postleitzahl), esc(obj.ort)))
+    land = 'DE'
+    if hasattr(obj, 'land'):
+        land = obj.land
+    else:
+        land = obj.laenderkennzeichen
+    if land != 'DE':
+        ortstr = ('<span class="country-name land">%s</span>-' % esc(land)) + ortstr
+    addr.append(ortstr)
+    ret.append('<span class="adr">%s</span">' % '<br/>'.join(addr))
+    
+    if hasattr(obj, 'tel') and obj.tel:
+        ret.append('<span class="tel"><span class="type">main</span>:<span class="value">%s</span></span>' % esc(obj.tel))
+    if hasattr(obj, 'mobile') and obj.mobile:
+        ret.append('<span class="tel"><span class="type">mobile</span>:<span class="value">%s</span></span>' % esc(obj.mobile))
+    if hasattr(obj, 'fax') and obj.fax:
+        ret.append('<span class="tel"><span class="type">fax</span>:<span class="value">%s</span></span>' % esc(obj.fax))
+    if hasattr(obj, 'email') and obj.email:
+        ret.append('<span class="email">%s</span>' % esc(obj.email))
+    
+    # the whole thing is enclesed in a vcard class tag
+    return mark_safe('<div class="address vcard">%s</div>' % '<br/>'.join(ret))
+format_addressproto.needs_autoescape = True
 
 
 @register.filter

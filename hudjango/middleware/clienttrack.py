@@ -43,7 +43,7 @@ class ClientTrackMiddleware(object):
             if len(parts) > 3:
                 request.clienttrack_last_visit = parts[2]
             else:
-                request.clienttrack_last_visit = None                
+                request.clienttrack_last_visit = None
         else:
             request.clienttrack_uid = base64.b32encode(hashlib.md5("%f-%f" % (random.random(), time.time())
                                                                    ).digest()).rstrip('=')
@@ -52,7 +52,7 @@ class ClientTrackMiddleware(object):
     def process_response(self, request, response):
         if (not getattr(request, 'clienttrack_prohibit', False)) or not request.clienttrack_first_visit:
             # even if clienttrack_prohibit is True, we we set the cookie for first time visitors. 
-            if not request.clienttrack_first_visit:
+            if not getattr(request, 'clienttrack_first_visit'):
                 request.clienttrack_first_visit = time.time()
             max_age = 3*365*24*60*60  # 3 years
             expires_time = time.time() + max_age
