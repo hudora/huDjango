@@ -21,6 +21,8 @@ import hashlib
 import random
 from django.utils.http import cookie_date
 
+def _gen_uid():
+    return base64.b32encode(hashlib.md5("%f-%f" % (random.random(), time.time())).digest()).rstrip('=')
 
 class ClientTrackMiddleware(object):
     """The ClientTrackMiddleware tracks Clients (Browsers) by setting a unique coockie.
@@ -45,18 +47,22 @@ class ClientTrackMiddleware(object):
             else:
                 request.clienttrack_last_visit = None
         else:
-            request.clienttrack_uid = base64.b32encode(hashlib.md5("%f-%f" % (random.random(), time.time())
-                                                                   ).digest()).rstrip('=')
+            request.clienttrack_uid = _gen_uid()
             request.clienttrack_last_visit = request.clienttrack_first_visit = None
     
     def process_response(self, request, response):
-        if (not getattr(request, 'clienttrack_prohibit', False)) or not request.clienttrack_first_visit:
+        # warning: when process_response() is called it might be, that process_request()
+        # was NOT called before on the process object
+        if (not getattr(request, 'clienttrack_prohibit', False)) or \
+          not getattr(request, 'clienttrack_first_visit', None):
             # even if clienttrack_prohibit is True, we we set the cookie for first time visitors. 
-            if not getattr(request, 'clienttrack_first_visit'):
+            if not getattr(request, 'clienttrack_first_visit', None):
                 request.clienttrack_first_visit = time.time()
             max_age = 3*365*24*60*60  # 3 years
             expires_time = time.time() + max_age
             expires = cookie_date(expires_time)
-            response.set_cookie('_hda', "%s,%s,%f" % (request.clienttrack_first_visit, request.clienttrack_uid, time.time()),
+            response.set_cookie('_hda', "%s,%s,%f" % (request.clienttrack_first_visit,
+                                                      getattr(request, 'clienttrack_uid', _gen_uid()),
+                                                      time.time()),
                                 max_age=max_age, expires=expires)
         return response
