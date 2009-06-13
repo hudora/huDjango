@@ -39,6 +39,8 @@ class CouchDBFile(File):
             else:
                 filename = "content"
             attachment = self._storage.db.get_attachment(self._doc, filename=filename)
+            if not attachment and filename != "content":
+                attachment = self._storage.db.get_attachment(self._doc, filename='content')
             self.file = StringIO(attachment)
         except couchdb.client.ResourceNotFound:
             if 'r' in self._mode:

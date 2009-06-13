@@ -1,6 +1,8 @@
 CHANGES in huDjango
 
-0.84p2  even more robust clienttracking - strange what browsers do to cookies
+0.84p3 besserer Umgang mit fehlenden Attatchmentnamen
+
+0.84p2 even more robust clienttracking - strange what browsers do to cookies
 
 0.84 added format_addressproto, more robust clienttracking
 
