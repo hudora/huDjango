@@ -1,5 +1,7 @@
 CHANGES in huDjango
 
+0.85 deumlaut filter
+
 0.84p3 besserer Umgang mit fehlenden Attatchmentnamen
 
 0.84p2 even more robust clienttracking - strange what browsers do to cookies

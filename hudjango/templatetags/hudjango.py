@@ -175,6 +175,19 @@ format_addressproto.needs_autoescape = True
 
 
 @register.filter
+def deumlaut(value):
+    """
+    Converts Umlauts to ae, oe, etc.
+    
+    Example::
+    
+        {% Würstchen|html_euro %} results in Wuerstchen
+    """
+    
+    return value.replace('ß', 'ss').replace('ö', 'oe').replace('ä', 'ae').replace('ü', 'ue').replace('Ö', 'Oe').replace('Ä', 'Ae').replace('Ü', 'ue')
+
+
+@register.filter
 def html_euro(value):
     """
     Formats a value with two decimal digits and adds an Euro sign in HTML entity notation.
