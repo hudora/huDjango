@@ -85,7 +85,11 @@ class CouchDBStorage(Storage):
         self.db = server[config.get('database')]
 
     def _put_file(self, name, content):
-        self.db[name] = {'size': len(content)}
+        doc = {}
+        if name in self.db:
+            doc = self.db[name]
+        doc['size'] = len(content)
+        self.db[name] = doc
         self.db.put_attachment(self.db[name], content, filename='content')
         return name
 
