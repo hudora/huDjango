@@ -8,6 +8,7 @@ build:
 upload:
 	python setup.py build sdist bdist_egg
 	rsync dist/* root@cybernetics.hudora.biz:/usr/local/www/apache22/data/dist/huDjango/
+	rsync -rvapP dist/* root@cybernetics.hudora.biz:/usr/local/www/data/nonpublic/eggs/
 
 publish:
 	# remove development tag
