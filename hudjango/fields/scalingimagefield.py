@@ -44,26 +44,28 @@ Imagescaler instance beeing able to play some nifty tricks:
 >>> img.path_scaled().square_dimensions()
 (75, 76)
 
-Created August 2006 by Maximillian Dornseif. Consider it BSD licensed.
+Created August 2006 by Maximillian Dornseif. Updated in early 2009.
+Consider it BSD licensed.
 """
 
-import md5, time, os, urlparse
 import Image 
+import os
+import urlparse
 from django.conf import settings
+from django.db.models import ImageField
+from django.utils.functional import curry
 from django.utils.html import escape 
 from django.utils.safestring import mark_safe 
-from django.utils.functional import curry
-from django.db.models import ImageField
 
-_sizes = {'mini':    "23x40",
-          'thumb':   "50x200", 
+_sizes = {'mini': "23x40",
+          'thumb': "50x200", 
           'sidebar': "179x600",
-          'small':   "240x160",
-          'medium':  "480x320", 
-          'full':    "477x800",
-          'svga':    "800x600", 
-          'xvga':    "1024x768",
-          'square':  "75x75!"} 
+          'small': "240x160",
+          'medium': "480x320", 
+          'full': "477x800",
+          'svga': "800x600", 
+          'xvga': "1024x768",
+          'square': "75x75!"} 
 
 def _scaleImage(width, height, image):
     """

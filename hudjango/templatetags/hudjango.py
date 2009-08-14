@@ -161,11 +161,14 @@ def format_addressproto(obj, autoescape=None):
     ret.append('<span class="adr">%s</span">' % '<br/>'.join(addr))
     
     if hasattr(obj, 'tel') and obj.tel:
-        ret.append('<span class="tel"><span class="type">main</span>:<span class="value">%s</span></span>' % esc(obj.tel))
+        ret.append('<span class="tel"><span class="type">main</span>:<span class="value">%s</span></span>'
+                   % esc(obj.tel))
     if hasattr(obj, 'mobile') and obj.mobile:
-        ret.append('<span class="tel"><span class="type">mobile</span>:<span class="value">%s</span></span>' % esc(obj.mobile))
+        ret.append('<span class="tel"><span class="type">mobile</span>:<span class="value">%s</span></span>'
+                   % esc(obj.mobile))
     if hasattr(obj, 'fax') and obj.fax:
-        ret.append('<span class="tel"><span class="type">fax</span>:<span class="value">%s</span></span>' % esc(obj.fax))
+        ret.append('<span class="tel"><span class="type">fax</span>:<span class="value">%s</span></span>'
+                   % esc(obj.fax))
     if hasattr(obj, 'email') and obj.email:
         ret.append('<span class="email">%s</span>' % esc(obj.email))
     

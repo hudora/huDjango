@@ -1,7 +1,8 @@
 import unittest
-from thread import start_new_thread as launch
-import threadlocals
+from hudjango.middleware import threadlocals
 from random import random
+from thread import start_new_thread as launch
+
 
 class TestThreadLocals(unittest.TestCase):
     def testLocalImplementation(self):

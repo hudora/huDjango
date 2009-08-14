@@ -15,7 +15,7 @@ def require_login(func):
     """This decorator logs in a user via HTTP-Auth."""
     @wraps(func)
     def _decorator(request, *args, **kwargs):
-        if not request.META.has_key('HTTP_AUTHORIZATION'):
+        if 'HTTP_AUTHORIZATION' not in request.META:
             response = HttpResponse('Authentication required', status=401)
             response['WWW-Authenticate'] = 'Basic realm="HUDORA Internal"'
             return response

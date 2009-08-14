@@ -24,12 +24,16 @@ Created by Maximillian Dornseif on 2007-07-13.
 This is licensed under the same terms as Django.
 """
 
-import unittest, os, coverage, coverage_color
+import coverage
+import coverage_color
+import os
+import unittest
 from django.conf import settings
 from django.test.utils import setup_test_environment, teardown_test_environment
 from django.test.utils import create_test_db, destroy_test_db
 
 from django.test.simple import build_suite
+
 
 def run_tests(module_list, verbosity=1, extra_tests=[]):
     """
@@ -73,7 +77,7 @@ def run_tests(module_list, verbosity=1, extra_tests=[]):
         for module_string in coveragemodules:
             module = __import__(module_string, globals(), locals(), [""])
             modules.append(module)
-            f,s,m,mf = coverage.analysis(module)
+            f, s, m, mf = coverage.analysis(module)
             fp = file(os.path.join(coveragedir, module_string + ".html"), "wb")
             coverage_color.colorize_file(f, outstream=fp, not_covered=mf)
             fp.close()

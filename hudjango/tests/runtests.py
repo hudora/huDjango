@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-import os, sys, traceback
+import os
+import sys
+import traceback
 import unittest
 
 import django.contrib as contrib
@@ -29,6 +31,7 @@ ALWAYS_INSTALLED_APPS = [
     'django.contrib.comments',
     'django.contrib.admin',
 ]
+
 
 def get_test_models():
     models = []
@@ -98,7 +101,7 @@ def django_tests(verbosity, interactive, test_labels):
     # Redirect some settings for the duration of these tests.
     settings.INSTALLED_APPS = ALWAYS_INSTALLED_APPS
     settings.ROOT_URLCONF = 'urls'
-    settings.TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), TEST_TEMPLATE_DIR),)
+    settings.TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), TEST_TEMPLATE_DIR), )
     settings.USE_I18N = True
     settings.LANGUAGE_CODE = 'en'
     settings.LOGIN_URL = '/accounts/login/'
@@ -160,7 +163,7 @@ if __name__ == "__main__":
     from optparse import OptionParser
     usage = "%prog [options] [model model model ...]"
     parser = OptionParser(usage=usage)
-    parser.add_option('-v','--verbosity', action='store', dest='verbosity', default='0',
+    parser.add_option('-v', '--verbosity', action='store', dest='verbosity', default='0',
         type='choice', choices=['0', '1', '2'],
         help='Verbosity level; 0=minimal output, 1=normal output, 2=all output')
     parser.add_option('--noinput', action='store_false', dest='interactive', default=True,
