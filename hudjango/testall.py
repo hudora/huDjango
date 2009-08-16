@@ -2,7 +2,6 @@
 
 import unittest
 
-import testInits
 import middleware.testthreadlocals
 import fields.testdefaulting
 import fields.testscalingimagefield

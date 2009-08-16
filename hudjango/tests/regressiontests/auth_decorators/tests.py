@@ -52,7 +52,6 @@ class DecoratorsTest(TestCase):
         client = Client()
         client.login(username='testuser', password='testpassword')
         response = client.get(view_url)
-        print response
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'access!')
         
