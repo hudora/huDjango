@@ -27,20 +27,9 @@ class TestDefaulting(unittest.TestCase):
         self.assert_(self.dcf2.default_from_field is None)
         self.assert_(isinstance(self.dcf, defaulting.DefaultingCharField))
     
-    def testSetDefault(self):
-        self.dcf._set_default(random())
-        self.assertEqual(self.dcfValue, self.dcf.default_from_field)
-        r = random()
-        self.dcf2._set_default(r)
-        self.assertEqual(r, self.dcf2.default_from_field)
-    
     def testInternalType(self):
         self.assertEqual("CharField", self.dcf.get_internal_type())
     
-    def testContributeToClass(self):
-        l = len(dispatcher.connections)
-        self.dcf.contribute_to_class(self.__class__, 'testing')
-        self.assertEqual(l+1, len(dispatcher.connections))
 
 suite = unittest.TestLoader().loadTestsFromTestCase(TestDefaulting)
 

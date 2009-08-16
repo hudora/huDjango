@@ -1,3 +1,5 @@
+# coding: utf-8
+
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('',
@@ -8,3 +10,6 @@ urlpatterns = patterns('',
     # test urlconf for middleware tests
     (r'^middleware/', include('regressiontests.middleware.urls')),
 )
+
+urlpatterns = patterns('hudjango.tests.regressiontests.auth_decorators.views',
+    (r'^auth_decorators/require_login/$', 'require_login_view'))

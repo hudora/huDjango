@@ -1,2 +1,0 @@
-DATABASE_ENGINE='sqlite3'
-ROOT_URLCONF='dummy'

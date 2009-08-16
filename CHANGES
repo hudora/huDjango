@@ -1,5 +1,7 @@
 CHANGES in huDjango
 
+0.85p2 Der @require_login decorator erzwingt jetzt keine HTTP-Authentifizierung mehr, wenn der Client bereits per Django Session authentifiziert wurde.
+
 0.85 deumlaut filter
 
 0.84p3 besserer Umgang mit fehlenden Attatchmentnamen

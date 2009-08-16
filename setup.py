@@ -10,8 +10,6 @@ huDjango contains a collection of small extensions th the Django Web framework.
  * validators - some simple validators
 """
 
-from ez_setup import use_setuptools
-use_setuptools()
 from setuptools import setup, find_packages
 
 # patch distutils if it can't cope with the "classifiers" or
@@ -26,7 +24,7 @@ hubarcode = setup(name='huDjango',
       maintainer='Maximillian Dornseif',
       maintainer_email='md@hudora.de',
       url='https://cybernetics.hudora.biz/projects/wiki/huDjango',
-      version='0.85p1',
+      version='0.85p2',
       description='various snippets for use with Django',
       long_description=long_description,
       classifiers=['License :: OSI Approved :: BSD License',

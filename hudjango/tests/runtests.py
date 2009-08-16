@@ -1,94 +1,46 @@
 #!/usr/bin/env python
 
+import figleaf
+figleaf.start(ignore_python_lib=True)
+
+import doctest
 import os
 import sys
 import traceback
 import unittest
 
-import django.contrib as contrib
-
-try:
-    set
-except NameError:
-    from sets import Set as set     # For Python 2.3
-
-
-CONTRIB_DIR_NAME = 'django.contrib'
 REGRESSION_TESTS_DIR_NAME = 'regressiontests'
 
 TEST_TEMPLATE_DIR = 'templates'
 
-CONTRIB_DIR = os.path.dirname(contrib.__file__)
 REGRESSION_TEST_DIR = os.path.join(os.path.dirname(__file__), REGRESSION_TESTS_DIR_NAME)
 
 ALWAYS_INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.auth',
     'django.contrib.sites',
-    'django.contrib.flatpages',
-    'django.contrib.redirects',
+    #'django.contrib.flatpages',
+    #'django.contrib.redirects',
     'django.contrib.sessions',
-    'django.contrib.comments',
+    #'django.contrib.comments',
     'django.contrib.admin',
 ]
 
 
 def get_test_models():
     models = []
-    for loc, dirpath in (REGRESSION_TESTS_DIR_NAME, REGRESSION_TEST_DIR), (CONTRIB_DIR_NAME, CONTRIB_DIR):
+    for loc, dirpath in [(REGRESSION_TESTS_DIR_NAME, REGRESSION_TEST_DIR), ]:
         for f in os.listdir(dirpath):
-            if f.startswith('__init__') or f.startswith('.') or f.startswith('sql') or f.startswith('invalid'):
+            if f.startswith('__init__') or f.startswith('.') or f.startswith('sql') \
+                or f.startswith('invalid') or f.endswith('.py') or f.endswith('.pyc'):
                 continue
             models.append((loc, f))
     return models
-
-def get_invalid_models():
-    models = []
-    for loc, dirpath in (REGRESSION_TESTS_DIR_NAME, REGRESSION_TEST_DIR), (CONTRIB_DIR_NAME, CONTRIB_DIR):
-        for f in os.listdir(dirpath):
-            if f.startswith('__init__') or f.startswith('.') or f.startswith('sql'):
-                continue
-            if f.startswith('invalid'):
-                models.append((loc, f))
-    return models
-
-class InvalidModelTestCase(unittest.TestCase):
-    def __init__(self, model_label):
-        unittest.TestCase.__init__(self)
-        self.model_label = model_label
-
-    def runTest(self):
-        from django.core.management.validation import get_validation_errors
-        from django.db.models.loading import load_app
-        from cStringIO import StringIO
-
-        try:
-            module = load_app(self.model_label)
-        except Exception, e:
-            self.fail('Unable to load invalid model module')
-
-        # Make sure sys.stdout is not a tty so that we get errors without
-        # coloring attached (makes matching the results easier). We restore
-        # sys.stderr afterwards.
-        orig_stdout = sys.stdout
-        s = StringIO()
-        sys.stdout = s
-        count = get_validation_errors(s, module)
-        sys.stdout = orig_stdout
-        s.seek(0)
-        error_log = s.read()
-        actual = error_log.split('\n')
-        expected = module.model_errors.split('\n')
-
-        unexpected = [err for err in actual if err not in expected]
-        missing = [err for err in expected if err not in actual]
-
-        self.assert_(not unexpected, "Unexpected Errors: " + '\n'.join(unexpected))
-        self.assert_(not missing, "Missing Errors: " + '\n'.join(missing))
+    
 
 def django_tests(verbosity, interactive, test_labels):
     from django.conf import settings
-
+    
     old_installed_apps = settings.INSTALLED_APPS
     old_test_database_name = settings.TEST_DATABASE_NAME
     old_root_urlconf = settings.ROOT_URLCONF
@@ -136,20 +88,19 @@ def django_tests(verbosity, interactive, test_labels):
         except Exception, e:
             sys.stderr.write("Error while importing %s:" % model_name + ''.join(traceback.format_exception(*sys.exc_info())[1:]))
             continue
-
-    # Add tests for invalid models.
-    extra_tests = []
-    for model_dir, model_name in get_invalid_models():
-        model_label = '.'.join([model_dir, model_name])
-        if not test_labels or model_name in test_labels:
-            extra_tests.append(InvalidModelTestCase(model_label))
-
+    
     # Run the test suite, including the extra validation tests.
     from django.test.simple import run_tests
-    failures = run_tests(test_labels, verbosity=verbosity, interactive=interactive, extra_tests=extra_tests)
+    failures = run_tests(test_labels, verbosity=verbosity, interactive=interactive)
+    # now test docstrings in modules directly without the test runner
+    for name, mod in sys.modules.items():
+        if name.startswith('hudjango'):
+            failure_count, test_count = doctest.testmod(mod)
+            failures += failure_count
+    
     if failures:
         sys.exit(failures)
-
+    
     # Restore the old settings.
     settings.INSTALLED_APPS = old_installed_apps
     settings.ROOT_URLCONF = old_root_urlconf
@@ -158,6 +109,7 @@ def django_tests(verbosity, interactive, test_labels):
     settings.LANGUAGE_CODE = old_language_code
     settings.LOGIN_URL = old_login_url
     settings.MIDDLEWARE_CLASSES = old_middleware_classes
+    
 
 if __name__ == "__main__":
     from optparse import OptionParser
@@ -177,3 +129,5 @@ if __name__ == "__main__":
         parser.error("DJANGO_SETTINGS_MODULE is not set in the environment. "
                       "Set it or use --settings.")
     django_tests(int(options.verbosity), options.interactive, args)
+    figleaf.stop()
+    figleaf.write_coverage('.figleaf', append=True)

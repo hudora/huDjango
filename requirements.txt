@@ -1,1 +1,10 @@
 Django==1.0.2-final
+couchdb
+# the following are optional actually Django requirements, but we include them here so any
+# application using huDjango can benefit from them
+PyYAML
+Markdown
+Textile
+Docutils
+setuptools
+python-memcached

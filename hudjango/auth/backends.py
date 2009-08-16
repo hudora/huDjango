@@ -66,16 +66,16 @@ class ZimbraBackend(django.contrib.auth.backends.ModelBackend):
     against Zimbra is successfull but no matching E-Mail in Django adress is found.
     the new user gets the attribute is_staff = True.
     
-    You can set your LDAP Servername in settuings using the variable LDAP_SERVER_NAME. E.g.:
+    You can set your LDAP Servername in settings using the variable LDAP_SERVER_NAME. E.g.:
     
     LDAP_SERVER_NAME = 'mail.local.hudora.biz'
     
     The code assumes the LDAP server allows "annonymous bind" (which is the default with Zimbra).
     """
-
+    
     # this code is based in Django Ticket 2507 - http://code.djangoproject.com/attachment/ticket/2507
     # and code from Christian N Clein
-
+    
     def authenticate(self, username=None, password=None):
         """Authenticate a user with password.
         

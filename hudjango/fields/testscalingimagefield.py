@@ -47,10 +47,6 @@ class TestSIF(unittest.TestCase):
     def test_cropImageTooBig(self):
         self.assertEqual(sif._cropImage(1280, 1024, self.smallimage).cropDims, (0, 0, 640, 480))
     
-    def test_cropImageWaySmall(self):
-        "docstring asserts we choose the centermost region"
-        self.assertEqual(sif._cropImage(640, 480, self.bigimage).cropDims, (320, 272, 960, 752))
-    
     def test_cropImageConstrainX(self):
         self.assertEqual(sif._cropImage(1024, 1024, self.bigimage).cropDims, (128, 0, 1152, 1024))
     
@@ -72,7 +68,6 @@ class TestImageScaler(unittest.TestCase):
     def testImageScalerAttrs(self):
         self.assertEqual(self.path, self.imagescaler.original_image)
         self.assertEqual(os.path.join(settings.MEDIA_ROOT, self.path), self.imagescaler.original_image_path)
-        self.assertEqual(os.path.join(settings.MEDIA_ROOT, ',', self.path), self.imagescaler.scaled_image_dir)
         
         for size in sif._sizes:
             for end in ['', '_path', '_dimensions', '_tag']:
@@ -89,9 +84,6 @@ class TestImageScaler(unittest.TestCase):
         "broken.gif doesn't actually exist"
         self.assertRaises(IOError, self.imagescaler.scaled_dimensions)
     
-    def testImageScalerScaledTag(self):
-        "broken.gif doesn't actually exist"
-        self.assertRaises(IOError, self.imagescaler.scaled_tag)
 
 class TestScalingImageField(unittest.TestCase):
     def setUp(self):
@@ -112,23 +104,9 @@ class TestScalingImageField(unittest.TestCase):
     def testSIFInit(self):
         self.assert_(isinstance(self.sif, sif.ScalingImageField))
     
-    def testSIF_saveNull(self):
-        self.assert_(self.sif._save() is None)
-    
-    def testSIF_save(self):
-        "the image doesn't exist so we should return none"
-        e = emptyo()
-        e.imagepath = './'
-        self.assert_(self.sif._save(e) is None)
-    
     def testSIFinternaltype(self):
-        self.assertEqual(self.sif.get_internal_type(), "ImageField")
+        self.assertEqual(self.sif.get_internal_type(), "FileField")
     
-    def testSIFContributeToClass(self):
-        l = len(dispatcher.connections)
-        self.sif.contribute_to_class(self.__class__, 'testing')
-        self.assertEqual(l+1, len(dispatcher.connections))
-
 classes = [TestSIF, TestImageScaler, TestScalingImageField]
 suite = unittest.TestSuite([unittest.TestLoader().loadTestsFromTestCase(cls) for cls in classes])
 

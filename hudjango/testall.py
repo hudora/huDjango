@@ -1,4 +1,4 @@
-#testall.py - run all test cases
+#testall.py - run all unittests test cexcept the ones in the test directory ...
 
 import unittest
 
@@ -7,7 +7,7 @@ import middleware.testthreadlocals
 import fields.testdefaulting
 import fields.testscalingimagefield
 
-tests = [testInits.suite, middleware.testthreadlocals.suite, 
+tests = [middleware.testthreadlocals.suite, 
          fields.testdefaulting.suite, 
          fields.testscalingimagefield.suite]
 suite = unittest.TestSuite(tests)
