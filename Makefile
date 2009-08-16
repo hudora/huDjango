@@ -14,8 +14,8 @@ check:
 	-/usr/local/hudorakit/bin/hd_pylint hudjango
 
 test: dependencies
-	# PYTHONPATH=hudjango/tests/:. DJANGO_SETTINGS_MODULE=settings_tests python hudjango/testall.py
-	PYTHONPATH=hudjango/tests/:. DJANGO_SETTINGS_MODULE=settings_tests python hudjango/tests/runtests.py --verbosity=2
+	PYTHONPATH=.:./tests DJANGO_SETTINGS_MODULE=settings_tests python testall.py
+	PYTHONPATH=tests/:. DJANGO_SETTINGS_MODULE=settings_tests python tests/runtests.py --verbosity=1
 
 dependencies:
 	virtualenv testenv
@@ -26,9 +26,9 @@ statistics:
 
 coverage: dependencies
 	rm .figleaf
-	PYTHONPATH=hudjango/tests/:. DJANGO_SETTINGS_MODULE=settings_tests python /usr/local/hudorakit/bin/hd_figleaf --ignore-pylibs hudjango/testall.py
+	PYTHONPATH=.:./tests DJANGO_SETTINGS_MODULE=settings_tests python /usr/local/hudorakit/bin/hd_figleaf --ignore-pylibs testall.py
 	# runtests automatically generates a cveraage dump
-	PYTHONPATH=hudjango/tests/:. DJANGO_SETTINGS_MODULE=settings_tests hudjango/tests/runtests.py
+	PYTHONPATH=tests/:. DJANGO_SETTINGS_MODULE=settings_tests tests/runtests.py
 	echo "testenv/.*" > figleaf-exclude.txt
 	echo "/opt/.*" >> figleaf-exclude.txt
 	echo "/usr/local/lib/.*" >> figleaf-exclude.txt
@@ -57,6 +57,6 @@ runserver: dependencies
 clean:
 	rm -Rf testenv generic_templates build dist html test.db sloccount.sc pylint.out pip-log.txt
 	rm -Rf huDjango.egg-info figleaf-exclude.txt interesting-files.txt .figleaf coverage
-	find . -name '*.pyc' -or -name '*.pyo' -or -name 'svn-commit*tmp' -delete
+	find . -name '*.pyc' -or -name '*.pyo' -or -name 'svn-commit*tmp' | xargs rm
 
 .PHONY: test build clean install upload check deploy

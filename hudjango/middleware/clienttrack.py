@@ -15,14 +15,17 @@ Created by Maximillian Dornseif on 2009-02-07.
 Copyright (c) 2009 HUDORA. All rights reserved.
 """
 
-import time
 import base64
 import hashlib
 import random
+import time
 from django.utils.http import cookie_date
+
+# TODO: needs tests
 
 def _gen_uid():
     return base64.b32encode(hashlib.md5("%f-%f" % (random.random(), time.time())).digest()).rstrip('=')
+    
 
 class ClientTrackMiddleware(object):
     """The ClientTrackMiddleware tracks Clients (Browsers) by setting a unique coockie.

@@ -11,5 +11,5 @@ urlpatterns = patterns('',
     (r'^middleware/', include('regressiontests.middleware.urls')),
 )
 
-urlpatterns = patterns('hudjango.tests.regressiontests.auth_decorators.views',
+urlpatterns = patterns('tests.regressiontests.auth_decorators.views',
     (r'^auth_decorators/require_login/$', 'require_login_view'))

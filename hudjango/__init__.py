@@ -62,13 +62,15 @@ class PrinterChooser(object):
             self.request.session['printer_choice'] = printer_choice
         return response
 
-    def update_context(self, contextdict={}):
+    def update_context(self, contextdict=None):
         """Update a Django template context (dict) in regard to the printer choices.
 
         Usually called in a Django view function as a parameter to render_to_response():
             response = render_to_response('foo.html', printer.update_context({'var1': 'val1', ...}))
         """
 
+        if not contextdict:
+            contextdict = {}
         contextdict.update({'printer_choice_list': self.choices,
                             'printer_choice': self.name})
         return contextdict

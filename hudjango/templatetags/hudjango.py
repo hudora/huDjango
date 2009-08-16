@@ -184,10 +184,12 @@ def deumlaut(value):
     
     Example::
     
-        {% Würstchen|html_euro %} results in Wuerstchen
+        {% Würstchen|deumlaut %} results in Wuerstchen
     """
     
-    return value.replace('ß', 'ss').replace('ö', 'oe').replace('ä', 'ae').replace('ü', 'ue').replace('Ö', 'Oe').replace('Ä', 'Ae').replace('Ü', 'ue')
+    # TODO: use huTools.unicode.deUmlaut()
+    value = value.replace('ß', 'ss').replace('ö', 'oe').replace('ä', 'ae').replace('ü', 'ue')
+    return value.replace('Ö', 'Oe').replace('Ä', 'Ae').replace('Ü', 'ue')
 
 
 @register.filter
