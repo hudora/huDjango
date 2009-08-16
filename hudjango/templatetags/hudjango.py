@@ -354,7 +354,6 @@ class PrinterChoiceNode(template.Node):
             printer_list = self.printer_list.resolve(context)
         except template.VariableDoesNotExist:
             printer_list = ['NullPrinter']
-        print "render", current_printer, printer_list
         options = []
         for printer in printer_list:
             if printer == current_printer:
@@ -425,7 +424,6 @@ def do_imageid(dummy, token):
     options = {'urlonly': False, 'nolink': False, 'size': '1024x768'}
     try:
         tokens = list(smart_split(token.contents))
-        print tokens
         dummy, obj = tokens[:2]
         if len(tokens) > 2:
             options['size'] = tokens[2].strip('"\'')
