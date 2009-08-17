@@ -12,7 +12,7 @@ import operator
 import urllib
 from django import template
 from django.template import resolve_variable
-from django.utils.html import escape, conditional_escape
+from django.utils.html import conditional_escape
 from django.utils.text import smart_split
 from django.utils.safestring import mark_safe
 
@@ -21,7 +21,7 @@ register = template.Library()
 
 
 @register.filter
-def format_location(value, arg):
+def format_location(value, dummy):
     """
     Formats a myPL location nicely.
     """

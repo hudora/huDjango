@@ -2,9 +2,16 @@
 
 import unittest
 
-import hudjango.middleware.testthreadlocals
+# ensure coverage sees even modules without tests
+import hudjango.auth.backends
+import hudjango.auth.decorators
 import hudjango.fields.testdefaulting
 import hudjango.fields.testscalingimagefield
+import hudjango.middleware.clienttrack
+import hudjango.middleware.testthreadlocals
+# need to figure out huImages dependency
+#import hudjango.storage
+#import hudjango.templatetags.hudjango
 
 tests = [hudjango.middleware.testthreadlocals.suite,
          hudjango.fields.testdefaulting.suite,

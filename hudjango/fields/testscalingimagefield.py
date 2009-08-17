@@ -2,7 +2,7 @@
 
 import os
 import re
-import scalingimagefield as sif
+import hudjango.fields.scalingimagefield as sif
 import unittest
 from django.conf import settings
 from django.dispatch import dispatcher
@@ -57,7 +57,7 @@ class TestImageScaler(unittest.TestCase):
     def setUp(self):
         self.path = str(random())
         field = emptyo()
-        field.attname="image"
+        field.attname = "image"
         parent = emptyo()
         parent.image = self.path
         self.imagescaler = sif.Imagescaler(field, parent)

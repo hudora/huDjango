@@ -25,22 +25,22 @@ statistics:
 	sloccount --wide --details hudjango > sloccount.sc
 
 coverage: dependencies
-	rm .figleaf
+	rm -Rf .figleaf*
 	PYTHONPATH=.:./tests DJANGO_SETTINGS_MODULE=settings_tests python /usr/local/hudorakit/bin/hd_figleaf --ignore-pylibs testall.py
 	# runtests automatically generates a cveraage dump
 	PYTHONPATH=tests/:. DJANGO_SETTINGS_MODULE=settings_tests tests/runtests.py
-	echo "testenv/.*" > figleaf-exclude.txt
-	echo "/opt/.*" >> figleaf-exclude.txt
-	echo "/usr/local/lib/.*" >> figleaf-exclude.txt
+	printf 'tests/.*\n.*test.py\n' > figleaf-exclude.txt
+	printf '/usr/local/lib/.*\n/opt/.*\ntestenv/.*\n' >> figleaf-exclude.txt
+	printf '.*manage.py\n.*settings.py\n.*setup.py\n.*urls.py\n' >> figleaf-exclude.txt
 	# fix pathnames
 	perl -npe "s|`pwd`/||g;" -i.bak .figleaf
 	python /usr/local/hudorakit/bin/hd_figleaf2html -d ./coverage -x figleaf-exclude.txt
 	echo "Coverage: " `grep -A3 ">totals:<" coverage/index.html|tail -n1|cut -c 9-13|cut -d'<' -f1`
 	# Error if coverage < 60 %
-	test `grep -A3 ">totals:<" coverage/index.html|tail -n1|cut -c 9-13|cut -d'.' -f1` -gt 60
+	test `grep -A3 ">totals:<" coverage/index.html|tail -n1|cut -c 9-13|cut -d'.' -f1` -gt 70
 
 build:
-	python setup.py build sdist bdist_egg
+	python setup.py build sdist
 	rsync -rvapP dist/* root@cybernetics.hudora.biz:/usr/local/www/data/nonpublic/eggs/
 
 upload: build
@@ -56,7 +56,7 @@ runserver: dependencies
 
 clean:
 	rm -Rf testenv generic_templates build dist html test.db sloccount.sc pylint.out pip-log.txt
-	rm -Rf huDjango.egg-info figleaf-exclude.txt interesting-files.txt .figleaf coverage
+	rm -Rf huDjango.egg-info figleaf-exclude.txt interesting-files.txt .figleaf* coverage
 	find . -name '*.pyc' -or -name '*.pyo' -or -name 'svn-commit*tmp' | xargs rm
 
 .PHONY: test build clean install upload check deploy

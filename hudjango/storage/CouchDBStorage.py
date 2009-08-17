@@ -33,7 +33,7 @@ class CouchDBFile(File):
         try:
             self._doc = self._storage.get_document(name)
 
-            tmp, ext = os.path.split(name)
+            dummy, ext = os.path.split(name)
             if ext:
                 filename = "content." + ext
             else:

@@ -8,3 +8,4 @@ Textile
 Docutils
 setuptools
 python-memcached
+xlwt
