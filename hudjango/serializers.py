@@ -26,6 +26,8 @@ def _write_row(worksheet, row, pos_row):
     for cell in row:
         if type(cell) is types.ListType:
             worksheet.write(pos_row, col, ', '.join(cell))
+        elif isinstance(cell, datetime.datetime):
+            worksheet.write(pos_row, col, cell.strftime('%Y-%m-%d %H:%M'))
         # elif isinstance(cell, django.db.models.fields.files.ImageFieldFile):
         #     cellcontent = ''
         #     if getattr(cell, 'name', None):
@@ -61,7 +63,7 @@ def queryset_to_xls(queryset, fields=None, headings=None):
     pos_row = 1
     
     # write headings
-    headingrow = []
+    headingrow = ['']
     for name in fields:
         headingrow.append(headings.get(name, name))
     pos_row = _write_row(worksheet, headingrow, pos_row)
@@ -70,7 +72,8 @@ def queryset_to_xls(queryset, fields=None, headings=None):
         absurl = obj.get_absolute_url()
         if not absurl.startswith('http://'):
             absurl = 'http://%s%s' % (django.contrib.sites.models.Site.objects.get_current().domain, absurl)
-        row = [xlwt.Formula('HYPERLINK("%s";"%s")' % (absurl, unicode(obj)))]
+        linktext = unicode(obj).replace('"', '') # Extremly curude but get's the job done
+        row = [xlwt.Formula('HYPERLINK("%s";"%s")' % (absurl, linktext))]
         for name in fields:
             if hasattr(getattr(obj, name), '__call__'):
                 # call 'name' is possible ...
