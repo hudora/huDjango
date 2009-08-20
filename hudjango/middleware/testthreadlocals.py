@@ -5,7 +5,7 @@ from thread import start_new_thread as launch
 
 
 class TestThreadLocals(unittest.TestCase):
-    def testLocalImplementation(self):
+    def test_LocalImplementation(self):
         lo = threadlocals.local()
         lo.foo = "bar"
         self.assertEqual(lo.foo, "bar")
@@ -20,19 +20,19 @@ class TestThreadLocals(unittest.TestCase):
         self.assertEqual(lo.foo, "bar")
         
     
-    def testGetSetLocalUser(self):
+    def test_GetSetLocalUser(self):
         self.assert_(threadlocals.get_current_user() is None)
         val = random()
         threadlocals.set_current_user(val)
         self.assertEquals(val, threadlocals.get_current_user())
     
-    def testGetSetRemoteIP(self):
+    def test_GetSetRemoteIP(self):
         self.assert_(threadlocals.get_remote_ip() is None)
         val = random()
         threadlocals.set_remote_ip(val)
         self.assertEquals(val, threadlocals.get_remote_ip())
         
-    def testThreadLocalsClass(self):
+    def test_ThreadLocalsClass(self):
         request = threadlocals.ThreadLocals() #almost any class except object() would work
         request.user = user = random()
         request.META = {}

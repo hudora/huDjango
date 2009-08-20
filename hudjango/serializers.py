@@ -60,7 +60,7 @@ def queryset_to_xls(queryset, fields=None, headings=None):
     
     # 1. Worksheet, ausführlich
     worksheet = workbook.add_sheet(u'Details')
-    pos_row = 1
+    pos_row = 0
     
     # write headings
     headingrow = ['']
