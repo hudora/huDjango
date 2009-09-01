@@ -1,5 +1,7 @@
 CHANGES in huDjango
 
+0.86p1 ZimbraBackend now can handle instances where there is more than one user with the same email address 
+
 0.86 adds serializers.queryset_to_xls()
 
 0.85p3 removed debugging output in template tags
