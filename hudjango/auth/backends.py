@@ -97,8 +97,6 @@ class ZimbraBackend(django.contrib.auth.backends.ModelBackend):
         # If the user does not exist in LDAP, Fail.
         if (len(result_data) != 1):
             lconn.unbind_s()
-            if getattr(settings, 'DEBUG', False):
-                print "ZimbraBackend: %s: unknown user" % (username)
             return None
         uid, result_dict = result_data[0]
         
@@ -107,8 +105,6 @@ class ZimbraBackend(django.contrib.auth.backends.ModelBackend):
             lconn.simple_bind_s(uid, password)
         except ldap.INVALID_CREDENTIALS: # Failed user/pass 
             # password wrong, exit
-            if getattr(settings, 'DEBUG', False):
-                print "ZimbraBackend: %s: invalid credentials" % (username)
             return None 
         finally:
             lconn.unbind_s() 
@@ -128,8 +124,6 @@ class ZimbraBackend(django.contrib.auth.backends.ModelBackend):
             user.is_active = True
             user.set_password(password)
             user.save()
-            if getattr(settings, 'DEBUG', False):
-                print "ZimbraBackend: %s: user %s created" % (username, user)
         else:
             user = users[0]
             user.set_password(password)
