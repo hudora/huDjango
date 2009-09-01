@@ -10,7 +10,8 @@ Copyright (c) 2009 HUDORA. All rights reserved.
 import doctest
 import sys
 import django.contrib.auth
-from functools import wraps
+from functools import wraps, update_wrapper
+
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponse
 
@@ -63,7 +64,7 @@ def require_login(func):
                 # user already is logged in, just proceed to the wrapped function
                 return func(request, *args, **kwargs)
         
-        # user is not logged in and didn't provide authentication pugins - request authentication
+        # user is not logged in and didn't provide authentication credentials - request authentication
         if 'HTTP_AUTHORIZATION' not in request.META:
             response = HttpResponse('Authentication required', status=401)
             response['WWW-Authenticate'] = 'Basic realm="HUDORA Internal"'
@@ -86,9 +87,28 @@ def require_login(func):
             response = HttpResponse('invalid login', status=401)
             response['WWW-Authenticate'] = 'Basic realm="HUDORA Internal"'
             return response
-        
     
     return _decorator
+
+def deny_unless_user_passes_test(test_func):
+    """Decorator that thecks if a user passes a test and if not renders a failure message.
+    
+    The decorator assumes the user is already authenticated. You might want to use it in conjunction
+    with require_login.
+    
+    Similar to django.contrib.auth.decorators.user_passes_test but without redirection."""
+    
+    
+    def wrap(func):
+        print "WWW", func, test_func
+        # @wraps(func)
+        def _decorator(request, *args, **kwargs):
+            print "deco!", test_func, request.user, test_func(request.user)
+            if not test_func(request.user):
+                return HttpResponse('Access denied / Zugriff verweigert (%s:%s)' % (request.user.id, request.user.username), status=403)
+            return func(request, *args, **kwargs)
+        return _decorator
+    return wrap
 
 if __name__ == '__main__':
     failure_count, test_count = doctest.testmod()

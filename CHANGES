@@ -1,6 +1,7 @@
 CHANGES in huDjango
 
-0.86p1 ZimbraBackend now can handle instances where there is more than one user with the same email address 
+0.86p2 ZimbraBackend now can handle instances where there is more than one user with the same email address,
+       auth.decoratiors.deny_unless_user_passes_test
 
 0.86 adds serializers.queryset_to_xls()
 
