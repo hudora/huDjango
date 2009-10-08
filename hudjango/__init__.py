@@ -4,6 +4,10 @@ See http://www.djangoproject.com/ and https://cybernetics.hudora.biz/projects/wi
 """
 
 import datetime
+from django.contrib.admin.models import LogEntry
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.utils.encoding import smart_unicode
 
 
 class PrinterChooser(object):
@@ -85,3 +89,27 @@ class PrinterChooser(object):
         if not printer_choice:
             self.request.session.get('printer_choice', self.choices[0])
         return printer_choice
+
+
+def log_action(obj, action, user=None, message='', reprstr=None):
+    """Adds a Django Admin Log entry.
+
+    Arguments
+     * obj: The object which is influenced by this action
+     * action: one of the actions in django.contrib.admin.models; ADDITION, CHANGE, DELETION
+     * user: the user which is responsible for this action. Defaults to user 'logger'
+     * message: A short message containing information about the action
+     * reprstr: a representation of the object
+
+    """
+    # from https://svn.python.org/conference/django/trunk/pycon/propmgr/changelog.py
+    content_t = ContentType.objects.get_for_model(type(obj))
+    if user is None:
+        log_user, created = User.objects.get(username='logger')
+        uid = log_user.id
+    else:
+        uid = user.id
+    if reprstr != None:
+        reprstr = smart_unicode(obj),
+    LogEntry.objects.log_action(uid, content_t.id, obj.id, reprstr, action, message)
+
