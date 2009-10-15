@@ -24,7 +24,6 @@ class TestThreadLocals(unittest.TestCase):
         launch(getsetlocal, ())
         self.assertEqual(lo.foo, "bar")
 
-
     def test_GetSetLocalUser(self):
         self.assert_(threadlocals.get_current_user() is None)
         val = random()

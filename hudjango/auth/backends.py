@@ -78,7 +78,6 @@ class ZimbraBackend(django.contrib.auth.backends.ModelBackend):
     and code from Christian N Klein.
     """
     
-    
     def authenticate(self, username=None, password=None):
         """Authenticate a user with password.
         

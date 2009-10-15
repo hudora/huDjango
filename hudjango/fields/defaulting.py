@@ -15,10 +15,10 @@ from django.db.models import signals
 
 class DefaultingCharField(models.CharField):
     """Results in a dynamic default value - basically if no value is given the field is filled from an 
-       other field during saving."""
+       other field during saving.
+    """
     # we might  be able to get the same effect with a callable default but I dont know how to ensure 
     # that the field  referenced is already set when the callable is executed.
-    
     def __init__(self, default_from_field=None, *args, **kwargs):
         self.default_from_field = default_from_field
         super(DefaultingCharField, self).__init__(*args, **kwargs)

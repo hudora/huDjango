@@ -115,4 +115,3 @@ def log_action(obj, action, user=None, message='', reprstr=None):
     else:
         reprstr = smart_unicode(reprstr)
     LogEntry.objects.log_action(uid, content_t.id, obj.id, reprstr, action, message)
-
