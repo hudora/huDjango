@@ -105,11 +105,14 @@ def log_action(obj, action, user=None, message='', reprstr=None):
     # from https://svn.python.org/conference/django/trunk/pycon/propmgr/changelog.py
     content_t = ContentType.objects.get_for_model(type(obj))
     if user is None:
-        log_user, created = User.objects.get(username='logger')
+        log_user = User.objects.get(username='logger')
         uid = log_user.id
     else:
         uid = user.id
-    if reprstr != None:
-        reprstr = smart_unicode(obj),
+
+    if reprstr == None:
+        reprstr = smart_unicode(repr(obj))
+    else:
+        reprstr = smart_unicode(reprstr)
     LogEntry.objects.log_action(uid, content_t.id, obj.id, reprstr, action, message)
 
