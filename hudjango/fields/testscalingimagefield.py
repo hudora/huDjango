@@ -2,31 +2,40 @@
 
 import os
 import re
-import hudjango.fields.scalingimagefield as sif
 import unittest
+from random import random
+    
 from django.conf import settings
 from django.dispatch import dispatcher
-from random import random
+import hudjango.fields.scalingimagefield as sif
 
 axb = re.compile(r"\d+x\d+")
+
 
 class emptyo(object):
     "Just sits there to have attributes assigned to it"
     pass
 
+
 class image(object):
+    """Test image."""
+
     def __init__(self, x, y):
         self.size = (x, y)
+
     def resize(self, size, quality=1):
         self.size = size
         return self
+
     def crop(self, dimensions):
         leftx, lefty, rightx, righty = dimensions
         self.size = (rightx - leftx, righty - lefty)
         self.cropDims = dimensions
         return self
 
+
 class TestSIF(unittest.TestCase):
+
     def setUp(self):
         self.bigimage = image(1280, 1024)
         self.smallimage = image(640, 480)
@@ -38,6 +47,7 @@ class TestSIF(unittest.TestCase):
     
     def test_ScaleImageConstrainY(self):
         self.assertEqual(sif._scaleImage(500, 300, self.bigimage).size, (375, 300))
+
     def test_scaleImageConstrainX(self):
         self.assertEqual(sif._scaleImage(300, 500, self.bigimage).size, (300, 240))
     
@@ -53,7 +63,9 @@ class TestSIF(unittest.TestCase):
     def test_cropImageConstrainY(self):
         self.assertEqual(sif._cropImage(1280, 1000, self.bigimage).cropDims, (0, 12, 1280, 1012))
 
+
 class TestImageScaler(unittest.TestCase):
+
     def setUp(self):
         self.path = str(random())
         field = emptyo()
@@ -86,12 +98,15 @@ class TestImageScaler(unittest.TestCase):
     
 
 class TestScalingImageField(unittest.TestCase):
+
     def setUp(self):
         self.sif = sif.ScalingImageField()
         
         self.__class__._meta = emptyo()
+
         def add_field(f):
             pass
+
         self.__class__._meta.add_field = add_field
         self.__class__._meta.module_name = "testscalingimagefield"
         self.__class__._meta.object_name = "TestScalingImageField"

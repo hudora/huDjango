@@ -67,6 +67,7 @@ _sizes = {'mini': "23x40",
           'xvga': "1024x768",
           'square': "75x75!"} 
 
+
 def _scaleImage(width, height, image):
     """
     This function will scale an image to a given bounding box. Image
@@ -88,6 +89,7 @@ def _scaleImage(width, height, image):
         lfactor = float(height) / float(ysize)
     res = image.resize((int(float(xsize) * lfactor), int(float(ysize) * lfactor)), Image.ANTIALIAS)
     return res
+
 
 def _cropImage(width, height, image):
     """
@@ -121,6 +123,7 @@ def _cropImage(width, height, image):
     res = res.crop((leftx, lefty, rightx, righty))
     return res
 
+
 class Imagescaler(object):
     """Class whose instances scale an image on the fly to desired properties.
     
@@ -140,6 +143,7 @@ class Imagescaler(object):
     >>> img.path_scaled().svga_tag()
     '<img src="/,/-/product/image/0e99d6be8ec0259df920c2d273d1ad6f.jpg_svga.jpeg" width="328" height="600" />'
     """
+
     def __init__(self, field, obj):
         self.field = field
         self.parent_obj = obj

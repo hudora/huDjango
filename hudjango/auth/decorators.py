@@ -90,14 +90,15 @@ def require_login(func):
     
     return _decorator
 
+
 def deny_unless_user_passes_test(test_func):
     """Decorator that thecks if a user passes a test and if not renders a failure message.
     
     The decorator assumes the user is already authenticated. You might want to use it in conjunction
     with require_login.
     
-    Similar to django.contrib.auth.decorators.user_passes_test but without redirection."""
-    
+    Similar to django.contrib.auth.decorators.user_passes_test but without redirection.
+    """
     
     def wrap(func):
         print "WWW", func, test_func

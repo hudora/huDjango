@@ -5,21 +5,26 @@ from thread import start_new_thread as launch
 
 
 class TestThreadLocals(unittest.TestCase):
+
     def test_LocalImplementation(self):
         lo = threadlocals.local()
         lo.foo = "bar"
         self.assertEqual(lo.foo, "bar")
+
         def fetchfoo():
             return lo.foo
+
         self.assertEqual(fetchfoo(), "bar")
         launch(self.assertRaises, (AttributeError, fetchfoo))
+
         def getsetlocal():
             lo.foo = 'bat'
             self.assertEqual(lo.foo, "bat")
+
         launch(getsetlocal, ())
         self.assertEqual(lo.foo, "bar")
-        
-    
+
+
     def test_GetSetLocalUser(self):
         self.assert_(threadlocals.get_current_user() is None)
         val = random()
