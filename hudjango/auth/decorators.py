@@ -106,7 +106,8 @@ def deny_unless_user_passes_test(test_func):
         def _decorator(request, *args, **kwargs):
             print "deco!", test_func, request.user, test_func(request.user)
             if not test_func(request.user):
-                return HttpResponse('Access denied / Zugriff verweigert (%s:%s)' % (request.user.id, request.user.username), status=403)
+                return HttpResponse('Access denied / Zugriff verweigert (%s:%s)' % (request.user.id,
+                            request.user.username), status=403)
             return func(request, *args, **kwargs)
         return _decorator
     return wrap
