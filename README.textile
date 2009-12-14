@@ -1,0 +1,30 @@
+
+h1. huDjango 
+
+huDjango contains a collection of small extensions th the [http://www.djangoproject.com/ Django Web framework] we use at HUDORA.
+
+* auth.backends.!EmailBackend -     Authenticate against django.contrib.auth.models.User the same way Django does by default except that the users can use their E-Mail address instead of the username to authenticate.
+* auth.backends.!ZimbraBackend - Authenticate against a Zimbra Server via LDAP. Users have to use their full E-Mail adress and Zimbra Passwort to log in. The Backend creates a new entry in the Django User Database if authentication against Zimbra is successfull but no matching E-Mail in Django adress is found.
+* fields.scalingimagefield - images with automatic scaling 
+* fields.defaulting - Django fields with more elaborate default values
+* templatetags.hudjango - format_address tag for formating the AddressProtocol, html_euro, {{{html_cent, {{{g2kg and {{{link_object tags.
+* !PrinterChooser - selection of a printer which is stored in a cookie.
+* serializers.queryset_to_xls - generate Excel/XLS file from a queryset.
+
+h2. Download
+
+You can get huDjango at "GitHub":http://github.com/hudora/huDjango or at the "Python Cheeseshop":http://pypi.python.org/pypi/huDjango/.
+
+h2. Changes 
+
+ * 0.86: added serializers.queryset_to_xls, fixes for require_login and ZimbraBackend
+ * 0.85: deUmlaut template filter
+ * 0.84: format_addressproto,  more robust clienttracking, don't generate links for empty image IDs, fixed {% imageid ... urlonly %} templatetag
+ * 0.83: hudjango.auth.decorators.require_login implements a bridge between Apache HTTP authentication and Django sessions
+ * 0.82: Storage Modules, huImage
+ * 0.78: hudjango.!PrinterChooser() functionality and respective template tags.
+ * 0.77: Django 1.0 compatibility
+ * 0.74: template tags / filters now work with Djangos new [http://www.djangoproject.com/documentation/templates/#autoescape autoescape] functionality. Needs Django version > r6844.
+ * 0.73: Extracted templatetags from the internal MoftS codebase.
+ * 0.72:  removed hudjango.fields.audit , support for Django Revision 7403.
+

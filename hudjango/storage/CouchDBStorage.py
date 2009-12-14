@@ -70,7 +70,7 @@ class CouchDBStorage(Storage):
     CouchDBStorage - a Django Storage class for CouchDB.
 
     The CouchDBStorage can be configured in settings.py, e.g.:
-    COUCHDB_STORAGE_OPTIONS = {'server': "http://boingball.local.hudora.biz:5984", 'database': 'produktpass_images'}
+    COUCHDB_STORAGE_OPTIONS = {'server': "http://couchdb.example.com:5984", 'database': 'produktpass_images'}
 
     Alternatively, the configuration can be passed as a parameter 'option' as a dictionary.
     """

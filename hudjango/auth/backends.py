@@ -70,7 +70,7 @@ class ZimbraBackend(django.contrib.auth.backends.ModelBackend):
     
     You can set your LDAP Servername in settings using the variable LDAP_SERVER_NAME. E.g.:
     
-    LDAP_SERVER_NAME = 'mail.hudora.biz'
+    LDAP_SERVER_NAME = 'ldap.hudora.biz'
     
     The code assumes the LDAP server allows "annonymous bind" (which is the default with Zimbra).
     
