@@ -1,13 +1,4 @@
-long_description = """
-huDjango contains a collection of small extensions th the Django Web framework.
-
- * auth.backends.EmailBackend - authentication with E-Mail adress
- * auth.backends.ZimbraBackend - authentication against a Zimbra LDAP server
- * fields.scalingimagefield - images with automatic scaling
- * fields.defaulting - Django fields with more elaborate default values
- * templatetags.hudjango - Various template tags to make life more fun.
- * middleware.threadlocals - Thread local storage
- * validators - some simple validators
+long_description = """huDjango contains a collection of small extensions the the Django Web framework.
 """
 
 from setuptools import setup, find_packages
@@ -23,7 +14,7 @@ if version < '2.2.3':
 hubarcode = setup(name='huDjango',
       maintainer='Maximillian Dornseif',
       maintainer_email='md@hudora.de',
-      url='https://cybernetics.hudora.biz/projects/wiki/huDjango',
+      url='http://github.com/hudora/huDjango',
       version='0.86p2',
       description='various snippets for use with Django',
       long_description=long_description,

@@ -56,7 +56,7 @@ def require_login(func):
                 # logout and force reauthentication.
                 django.contrib.auth.logout(request)
                 response = HttpResponse('Authentication required', status=401)
-                response['WWW-Authenticate'] = 'Basic realm="HUDORA Internal"'
+                response['WWW-Authenticate'] = 'Basic realm="Internal"'
                 return response
             else:
                 if not request.user.is_active:
@@ -67,7 +67,7 @@ def require_login(func):
         # user is not logged in and didn't provide authentication credentials - request authentication
         if 'HTTP_AUTHORIZATION' not in request.META:
             response = HttpResponse('Authentication required', status=401)
-            response['WWW-Authenticate'] = 'Basic realm="HUDORA Internal"'
+            response['WWW-Authenticate'] = 'Basic realm="Internal"'
             return response
             
         if not username:
@@ -85,7 +85,7 @@ def require_login(func):
         else:
             # Django didn't find anything, ask for authentication again.
             response = HttpResponse('invalid login', status=401)
-            response['WWW-Authenticate'] = 'Basic realm="HUDORA Internal"'
+            response['WWW-Authenticate'] = 'Basic realm="Internal"'
             return response
     
     return _decorator
