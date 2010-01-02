@@ -1,6 +1,6 @@
-long_description = """huDjango contains a collection of small extensions the the Django Web framework.
-"""
+"""huDjango contains a collection of small extensions the the Django Web framework."""
 
+import codecs
 from setuptools import setup, find_packages
 
 # patch distutils if it can't cope with the "classifiers" or
@@ -10,14 +10,14 @@ if version < '2.2.3':
     from distutils.dist import DistributionMetadata
     DistributionMetadata.classifiers = None
     DistributionMetadata.download_url = None
-            
+
 hubarcode = setup(name='huDjango',
       maintainer='Maximillian Dornseif',
       maintainer_email='md@hudora.de',
       url='http://github.com/hudora/huDjango',
       version='0.86p2',
       description='various snippets for use with Django',
-      long_description=long_description,
+      long_description=codecs.open('README.textile', "r", "utf-8").read(),
       classifiers=['License :: OSI Approved :: BSD License',
                    'Intended Audience :: Developers',
                    'Programming Language :: Python'],

@@ -7,13 +7,13 @@ huDjango contains a collection of small extensions th the [http://www.djangoproj
 * auth.backends.!ZimbraBackend - Authenticate against a Zimbra Server via LDAP. Users have to use their full E-Mail adress and Zimbra Passwort to log in. The Backend creates a new entry in the Django User Database if authentication against Zimbra is successfull but no matching E-Mail in Django adress is found.
 * fields.scalingimagefield - images with automatic scaling 
 * fields.defaulting - Django fields with more elaborate default values
-* templatetags.hudjango - format_address tag for formating the AddressProtocol, html_euro, {{{html_cent, {{{g2kg and {{{link_object tags.
-* !PrinterChooser - selection of a printer which is stored in a cookie.
+* templatetags.hudjango - format_address tag for formating the AddressProtocol, html_euro, `html_cent`, `g2kg` and `link_object`  tags.
+* PrinterChooser - selection of a printer which is stored in a cookie.
 * serializers.queryset_to_xls - generate Excel/XLS file from a queryset.
 
 h2. Download
 
-You can get huDjango at "GitHub":http://github.com/hudora/huDjango or at the "Python Cheeseshop":http://pypi.python.org/pypi/huDjango/.
+You can get huDjango at the "Python Cheeseshop":http://pypi.python.org/pypi/huDjango/ or at "GitHub":http://github.com/hudora/huDjango.
 
 h2. Changes 
 
@@ -28,3 +28,6 @@ h2. Changes
  * 0.73: Extracted templatetags from the internal MoftS codebase.
  * 0.72:  removed hudjango.fields.audit , support for Django Revision 7403.
 
+h2. Alternatives
+
+ * http://pypi.python.org/pypi/django-auth-ldap
