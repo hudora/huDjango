@@ -44,8 +44,7 @@ build:
 	rsync -rvapP dist/* root@cybernetics.hudora.biz:/usr/local/www/data/nonpublic/eggs/
 
 upload: build
-	rsync dist/* root@cybernetics.hudora.biz:/usr/local/www/apache22/data/nonpublic/eggs/
-	rsync dist/* root@cybernetics.hudora.biz:/usr/local/www/apache22/data/dist/huDjango/
+	python setup.py sdist upload
 
 install: build
 	sudo python setup.py install
