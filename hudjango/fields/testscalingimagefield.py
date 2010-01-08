@@ -84,7 +84,7 @@ class TestImageScaler(unittest.TestCase):
         for size in sif._sizes:
             for end in ['', '_path', '_dimensions', '_tag']:
                 self.assert_(size + end in dir(self.imagescaler))
-                self.assert_(callable(getattr(self.imagescaler, size + end)))
+                self.assert_(hasattr(getattr(self.imagescaler, size + end), '__call__'))
     
     def testImagescalerScaledFilename(self):
         self.assertEquals(self.imagescaler.scaled_filename(), 'broken.gif')

@@ -24,7 +24,7 @@ def _write_row(worksheet, row, pos_row):
     """Write a row to the current worksheet."""
     col = 0
     for cell in row:
-        if type(cell) is types.ListType:
+        if isinstance(cell, list):
             worksheet.write(pos_row, col, ', '.join(cell))
         elif isinstance(cell, datetime.datetime):
             worksheet.write(pos_row, col, cell.strftime('%Y-%m-%d %H:%M'))

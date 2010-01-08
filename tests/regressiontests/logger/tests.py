@@ -21,9 +21,9 @@ class TestLog(TestCase):
     def setUp(self):
         """Create a entry in the database."""
         self.place1 = Place.objects.create(name="Dempsey's", address="623 Vermont St",
-                                      last_visit=datetime(2008,7,6,5,4,3))
+                                      last_visit=datetime(2008, 7, 6, 5, 4, 3))
         self.place2 = Place.objects.create(name="Eich", address=u"An dür Eich 1",
-                                      last_visit=datetime(2008,7,6,5,4,3))
+                                      last_visit=datetime(2008, 7, 6, 5, 4, 3))
 
         self.user = User.objects.create_user('logger', 'lennon@example.com', 'logger')
         self.user2 = User.objects.create_user('logger2', 'lennon@example.com', 'logger2')
