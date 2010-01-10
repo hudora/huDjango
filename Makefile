@@ -40,7 +40,7 @@ coverage: dependencies
 	test `grep -A3 ">totals:<" coverage/index.html|tail -n1|cut -c 9-13|cut -d'.' -f1` -gt 70
 
 build:
-	python setup.py build sdist
+	python setup.py sdist
 	rsync -rvapP dist/* root@cybernetics.hudora.biz:/usr/local/www/data/nonpublic/eggs/
 
 upload: build

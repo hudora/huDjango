@@ -5,13 +5,16 @@ Created by Christian Klein.
 """
 
 from hudjango.storage.CouchDBStorage import CouchDBStorage
-import huimages
+huimages = None # lazy import, see ImageServerStorage.__init__()
 
 
 class ImageServerStorage(CouchDBStorage):
     """ImageServerStorage - a Django Storage class for the huDjango ImageServer."""
     
     def __init__(self, **kwargs):
+        global huimages
+        if huimages is None:
+            import huimages
         self.typ = kwargs.get('type', None)
         
     def _put_file(self, name, content):

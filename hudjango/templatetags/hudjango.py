@@ -7,7 +7,6 @@ Created by Maximillian Dornseif on 2006-08-22.
 Copyright (c) 2006-2008 HUDORA GmbH. Consider it BSD licensed.
 """
 
-import huimages
 import operator
 import urllib
 from django import template
@@ -15,6 +14,7 @@ from django.template import resolve_variable
 from django.utils.html import conditional_escape
 from django.utils.text import smart_split
 from django.utils.safestring import mark_safe
+huimages = None # lazy import, see ImageLink.__init__()
 
 
 register = template.Library()
@@ -26,6 +26,7 @@ def format_location(value, dummy):
     Formats a myPL location nicely.
     """
     
+    # TODO: move to myPLfrontend - this is not of general interest.
     if len(value) == 6 and str(value).isdigit():
         return "%s-%s-%s" % (value[:2], value[2:4], value[4:])
     return value
@@ -383,6 +384,9 @@ class ImageLink(template.Node):
     """Helper class for rendering do_imageid()."""
     
     def __init__(self, obj, options):
+        global huimages
+        if huimages is None:
+            import huimages
         super(ImageLink, self).__init__()
         self.obj = obj
         self.options = options

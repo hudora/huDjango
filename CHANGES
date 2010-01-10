@@ -1,31 +1,19 @@
 CHANGES in huDjango
 
+0.87   lazy import of huImages - gets rid of always setting up S3-Infrastructure
+0.86p4 setup fixes
 0.86p3 requirements fixed, ZimbraBackend is depreciated
-
 0.86p2 ZimbraBackend now can handle instances where there is more than one user with the same email address,
        auth.decoratiors.deny_unless_user_passes_test
-
-0.86 adds serializers.queryset_to_xls()
-
+0.86   adds serializers.queryset_to_xls()
 0.85p3 removed debugging output in template tags
-
 0.85p2 Der @require_login decorator erzwingt jetzt keine HTTP-Authentifizierung mehr, wenn der Client bereits per Django Session authentifiziert wurde.
-
-0.85 deumlaut filter
-
+0.85   deumlaut filter
 0.84p3 besserer Umgang mit fehlenden Attatchmentnamen
-
 0.84p2 even more robust clienttracking - strange what browsers do to cookies
-
-0.84 added format_addressproto, more robust clienttracking
-
+0.84   added format_addressproto, more robust clienttracking
 0.83p2 don't generate links for empty image IDs, fixed {% imageid ... urlonly %} templatetag
-
-0.83 require_login decorator added
-
-0.82 improved ImageServerStorage
-     implemented template tag "imageid"
-
-0.81 added ClientTrackMiddleware
-
-0.75 Added two validators: IsLessOrEqualThanOtherField and IsLessOrEqualThan.
+0.83   require_login decorator added
+0.82   improved ImageServerStorage, implemented template tag "imageid"
+0.81   added ClientTrackMiddleware
+0.75   Added two validators: IsLessOrEqualThanOtherField and IsLessOrEqualThan.
