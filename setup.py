@@ -23,7 +23,7 @@ hubarcode = setup(name='huDjango',
                    'Programming Language :: Python'],
       zip_safe=True,
       packages=find_packages(),
-      install_requires=['Django>=1.0.2', 'huimages>=1.01', 'textile', 'python-ldap', 'xlwt'],
+      install_requires=['Django>=1.0.2', 'huimages>=1.01', 'textile', 'xlwt'],
       dependency_links = ['http://cybernetics.hudora.biz/dist/',
                           'http://cybernetics.hudora.biz/nonpublic/eggs/'],
 )
