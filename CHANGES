@@ -1,5 +1,6 @@
 CHANGES in huDjango
 
+0.87p1 Fix when formating adresses with undennr set
 0.87   lazy import of huImages - gets rid of always setting up S3-Infrastructure
 0.86p4 setup fixes
 0.86p3 requirements fixed, ZimbraBackend is depreciated
