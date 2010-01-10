@@ -16,6 +16,6 @@ hubarcode = setup(name='huDjango',
       zip_safe=True,
       packages=find_packages(),
       install_requires=['Django>=1.0.2', 'huimages>=1.01', 'textile', 'markdown', 'xlwt',
-                        'docutils', 'PyYAML', 'couchdb', 'python-memcached'],
+                        'docutils', 'PyYAML', 'CouchDB>=0.6.1', 'python-memcached'],
       dependency_links = ['http://cybernetics.hudora.biz/dist/']
 )

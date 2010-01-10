@@ -1,7 +1,7 @@
 Django
-couchdb
 setuptools
 xlwt
+CouchDB>=0.6.1
 
 # the following are optional actually Django requirements, but we include them here so any
 # application using huDjango can benefit from them
