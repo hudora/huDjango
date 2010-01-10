@@ -1,3 +1,5 @@
 *~
 *.pyc
 *.bak
+dist/
+huDjango.egg-info/
