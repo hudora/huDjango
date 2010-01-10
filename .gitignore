@@ -3,3 +3,4 @@
 *.bak
 build/
 dist/
+huDjango.egg-info/

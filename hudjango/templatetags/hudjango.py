@@ -113,6 +113,7 @@ def format_addressproto(obj, autoescape=None):
     The generated XHTML follows hCard described at http://microformats.org/wiki/hcard
     """
     
+    print "XXX", dir(obj)
     ret = []
     if autoescape:
         esc = conditional_escape
@@ -120,14 +121,14 @@ def format_addressproto(obj, autoescape=None):
         esc = lambda x: x
     
     kdnstr = '<span class="org name1">%s</span>' % esc(obj.name1)
-    if hasattr(obj, 'kundennr') and obj.kundenr:
-        kdnstr += ' (<span class="customerid">%s</span>)' % esc(obj.kundenr)
-    elif hasattr(obj, 'softmid') and obj.softmid:
+    if getattr(obj, 'kundennr'):
+        kdnstr += ' (<span class="customerid">%s</span>)' % esc(obj.kundennr)
+    elif getattr(obj, 'softmid'):
         kdnstr += ' (<span class="customerid">SC%s</span>)' % esc(obj.softmid)
-    elif hasattr(obj, 'curmid') and obj.curmid:
+    elif getattr(obj, 'curmid'):
         kdnstr += ' (<span class="customerid">%s</span>)' % esc(obj.curmid)
     ret.append(kdnstr)
-    
+
     for dataname in ['name2', 'name3']:
         data = ''
         if hasattr(obj, dataname):
