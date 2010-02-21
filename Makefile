@@ -14,6 +14,7 @@ check:
 	-/usr/local/hudorakit/bin/hd_pylint hudjango
 
 test: dependencies
+	./testenv/bin/python ./hudjango/templatetags/hudjango.py
 	PYTHONPATH=.:./tests DJANGO_SETTINGS_MODULE=settings_tests python testall.py
 	PYTHONPATH=tests/:. DJANGO_SETTINGS_MODULE=settings_tests python tests/runtests.py --verbosity=1
 

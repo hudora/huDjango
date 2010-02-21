@@ -4,7 +4,7 @@
 middleware.py tracks clients by setting a persistent unique coockie.
 
 You can access it via request.clienttrack_uid in your views.
-There is also request.clienttrack_first_visit and request.clienttrack_first_visit
+There is also request.clienttrack_first_visit and request.clienttrack_last_visit
 available to your views. See ClientTrackMiddleware for details.
 
 Always keep in mind that Coockies can easily be faked.
@@ -21,22 +21,21 @@ import random
 import time
 from django.utils.http import cookie_date
 
-# TODO: needs tests
 
 def _gen_uid():
     return base64.b32encode(hashlib.md5("%f-%f" % (random.random(), time.time())).digest()).rstrip('=')
     
 
 class ClientTrackMiddleware(object):
-    """The ClientTrackMiddleware tracks Clients (Browsers) by setting a unique coockie.
+    """The ClientTrackMiddleware tracks Clients (Browsers) by setting a unique cookie.
     
-    Assuming cookies work as advertised you can access the following variables in yout view functions:
+    Assuming cookies work as advertised you can access the following variables in your view functions:
     
     * request.clienttrack_uid (always set) - unique ID we assigned to the client.
       Keep in mind that this is trival to fake.
-    * request.clienttrack_first_visit - timt.time() value at the very first time the client accessed our
+    * request.clienttrack_first_visit - time.time() value at the very first time the client accessed our
       server or None for first time visitors.
-    * request.clienttrack_last_visit - timt.time() value at the very time the client last accessed our
+    * request.clienttrack_last_visit - time.time() value at the very time the client last accessed our
       server or None.
     """
     

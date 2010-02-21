@@ -4,3 +4,4 @@
 build/
 dist/
 huDjango.egg-info/
+testenv/

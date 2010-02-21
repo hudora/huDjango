@@ -47,19 +47,19 @@ def slashencode(value):
 @register.filter
 def format_address(obj, autoescape=None):
     """Formats the address in a Lieferung/Lieferschein/Kunde as nice XHTML.
-    
+
     The obj must follow the address-protocol outlined at
     http://cybernetics.hudora.biz/projects/wiki/AddressProtocol
-    
+
     The generated XHTML follows hCard described at http://microformats.org/wiki/hcard
     """
-    
+
     ret = []
     if autoescape:
         esc = conditional_escape
     else:
         esc = lambda x: x
-    
+
     kdnstr = '<span class="org name1">%s</span>' % esc(obj.name1)
     if hasattr(obj, 'kundennr') and obj.kundennr:
         kdnstr += ' (<span class="customerid">%s</span>)' % esc(obj.kundennr)
@@ -74,7 +74,6 @@ def format_address(obj, autoescape=None):
             ret.append('<span class="%s">%s</span>' % (dataname, esc(data)))
     if hasattr(obj, 'iln') and obj.iln:
         kdnstr += 'ILN <span class="iln">%s</span>' % esc(obj.iln)
-    
     ret.append('<span class="adr">')
     for dataname in ['adresse', 'address', 'street', 'strasse']:
         data = ''
@@ -96,11 +95,18 @@ def format_address(obj, autoescape=None):
     if land != 'DE':
         ortstr = ('<span class="country-name land">%s</span>-' % esc(land)) + ortstr
     ret.append(ortstr)
-    ret.append('</span">')
-    
+    ret.append('</span>')
     # the whole thing is enclesed in a vcard class tag
     return mark_safe('<div class="address vcard">%s</div>' % '<br/>'.join(ret))
 format_address.needs_autoescape = True
+
+
+def _get_attr(obj, key):
+    """Get an object attribute or an dict key"""
+    ret = getattr(obj, key, '')
+    if (not ret) and hasattr(obj, 'get'):
+        ret = obj.get(key, '')
+    return ret
 
 
 @register.filter
@@ -108,71 +114,80 @@ def format_addressproto(obj, autoescape=None):
     """Formats the address as nice XHTML. Includes telephone number and the like.
     
     The obj must follow the address-protocol outlined at
-    http://cybernetics.hudora.biz/projects/wiki/AddressProtocol
+    http://github.com/hudora/huTools/blob/master/doc/standards/address_protocol.markdown
     
     The generated XHTML follows hCard described at http://microformats.org/wiki/hcard
-    """
     
-    print "XXX", dir(obj)
+    Works with objects:
+    >>> class Dummy(object): pass
+    >>> addr = Dummy()
+    >>> addr.name1 = 'nameTEST'
+    >>> format_addressproto(addr)
+    '<div class="address vcard"><span class="org name1">nameTEST</span><br/><span class="adr"><span class="zip postal-code"></span> <span class="city locality"></span></span></div>'
+    
+    Works also with dicts:
+    >>> format_addressproto({'name1': 'TESTname', 'ort': 'Rade', 'plz': '42477'})
+    '<div class="address vcard"><span class="org name1">TESTname</span><br/><span class="adr"><span class="zip postal-code">42477</span> <span class="city locality">Rade</span></span></div>'
+    """
+    # it also supports some legacy variants of the address-protocol
+    
     ret = []
     if autoescape:
         esc = conditional_escape
     else:
         esc = lambda x: x
     
-    kdnstr = '<span class="org name1">%s</span>' % esc(obj.name1)
-    if getattr(obj, 'kundennr'):
-        kdnstr += ' (<span class="customerid">%s</span>)' % esc(obj.kundennr)
-    elif getattr(obj, 'softmid'):
-        kdnstr += ' (<span class="customerid">SC%s</span>)' % esc(obj.softmid)
-    elif getattr(obj, 'curmid'):
-        kdnstr += ' (<span class="customerid">%s</span>)' % esc(obj.curmid)
+    kdnstr = '<span class="org name1">%s</span>' % esc(_get_attr(obj, 'name1'))
+    if _get_attr(obj, 'kundennr'):
+        kdnstr += ' (<span class="customerid">%s</span>)' % esc(_get_attr(obj, 'kundennr'))
+    elif _get_attr(obj, 'softmid'):
+        kdnstr += ' (<span class="customerid">SC%s</span>)' % esc(_get_attr(obj, 'softmid'))
+    elif _get_attr(obj, 'curmid'):
+        kdnstr += ' (<span class="customerid">%s</span>)' % esc(_get_attr(obj, 'curmid'))
     ret.append(kdnstr)
 
     for dataname in ['name2', 'name3']:
-        data = ''
-        if hasattr(obj, dataname):
-            data = getattr(obj, dataname)
+        data = _get_attr(obj, dataname)
         if data:
             ret.append('<span class="%s">%s</span>' % (dataname, esc(data)))
     
-    if hasattr(obj, 'iln') and obj.iln:
-        kdnstr += 'ILN <span class="iln">%s</span>' % esc(obj.iln)
+    if _get_attr(obj, 'iln'):
+        kdnstr += 'ILN <span class="iln">%s</span>' % esc(_get_attr(obj, 'iln'))
     
     addr = []
     for dataname in ['adresse', 'address', 'street', 'strasse']:
-        data = ''
-        if hasattr(obj, dataname):
-            data = getattr(obj, dataname)
+        data = _get_attr(obj, dataname)
         if data:
             addr.append('<span class="%s">%s</span>' % (dataname, esc(data)))
-    if hasattr(obj, 'plz'):
+    if _get_attr(obj, 'plz'):
         ortstr = ('<span class="zip postal-code">%s</span>'
-                  ' <span class="city locality">%s</span>' % (esc(obj.plz), esc(obj.ort)))
+                  ' <span class="city locality">%s</span>' % (esc(_get_attr(obj, 'plz')),
+                                                              esc(_get_attr(obj, 'ort'))))
     else:
         ortstr = ('<span class="zip postal-code">%s</span>'
-                  ' <span class="city locality">%s</span>' % (esc(obj.postleitzahl), esc(obj.ort)))
-    land = 'DE'
-    if hasattr(obj, 'land'):
-        land = obj.land
-    else:
-        land = obj.laenderkennzeichen
+                  ' <span class="city locality">%s</span>' % (esc(_get_attr(obj, 'postleitzahl')),
+                                                              esc(_get_attr(obj, 'ort'))))
+    land = _get_attr(obj, 'land')
+    if not land:
+        land = _get_attr(obj, 'laenderkennzeichen')
+    if not land:
+        land = 'DE'
     if land != 'DE':
         ortstr = ('<span class="country-name land">%s</span>-' % esc(land)) + ortstr
     addr.append(ortstr)
-    ret.append('<span class="adr">%s</span">' % '<br/>'.join(addr))
+    ret.append('<span class="adr">%s</span>' % '<br/>'.join(addr))
     
-    if hasattr(obj, 'tel') and obj.tel:
+    if _get_attr(obj, 'tel'):
         ret.append('<span class="tel"><span class="type">main</span>:<span class="value">%s</span></span>'
-                   % esc(obj.tel))
-    if hasattr(obj, 'mobile') and obj.mobile:
+                   % esc(_get_attr(obj, 'tel')))
+    if _get_attr(obj, 'mobile'):
         ret.append('<span class="tel"><span class="type">mobile</span>:<span class="value">%s</span></span>'
-                   % esc(obj.mobile))
-    if hasattr(obj, 'fax') and obj.fax:
+                   % esc(_get_attr(obj, 'mobile')))
+    if _get_attr(obj, 'fax'):
         ret.append('<span class="tel"><span class="type">fax</span>:<span class="value">%s</span></span>'
-                   % esc(obj.fax))
-    if hasattr(obj, 'email') and obj.email:
-        ret.append('<span class="email">%s</span>' % esc(obj.email))
+                   % esc(_get_attr(obj, 'fax')))
+    if _get_attr(obj, 'email'):
+        ret.append('<span class="email">%s</span>' % esc(_get_attr(obj, 'email')))
     
     # the whole thing is enclesed in a vcard class tag
     return mark_safe('<div class="address vcard">%s</div>' % '<br/>'.join(ret))
@@ -441,3 +456,8 @@ def do_imageid(dummy, token):
         raise template.TemplateSyntaxError, "%r tag requires a single argument" % token.contents.split()[0]
     return ImageLink(obj, options)
 register.tag('imageid', do_imageid)
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
