@@ -65,7 +65,6 @@ class CouchDBField(models.CharField):
         if value == '' or value is None:
             return CouchDBDocument(server=self.server, database=self.database)
         server, database, doc_id = value.split('#')
-        print ">>>", value
 	try:
 	    doc = CouchDBDocument(self._connection(server, database)[doc_id],
                                   server=server, database=database)
@@ -82,7 +81,7 @@ class CouchDBField(models.CharField):
         
         if not '_id' in value:
             value['_id'] = uuid4().hex
-	value.save()
+        value.save()
         #server, database, doc_id = value.get_location()
         #self._connection(server)[database][doc_id] = value
         return self.get_db_prep_value(value)

@@ -83,7 +83,7 @@ class CouchDBStorage(Storage):
             config.update(settings.COUCHDB_STORAGE_OPTIONS)
         config.update(kwargs)
         self.base_url = config.get('server', DEFAULT_SERVER)
-        self.db = setup_couchdb(self.baseurl, config.get('database'))
+        self.db = setup_couchdb(self.base_url, config.get('database'))
 
     def _put_file(self, name, content):
         doc = {}
