@@ -15,8 +15,10 @@ from urlparse import urljoin
 from urllib import quote_plus
 import os.path
 
+from huTools.couch import setup_couchdb
 
-DEFAULT_SERVER = "http://couchdb.local:5984"
+
+DEFAULT_SERVER = "http://couchdb.local:5984/"
 
 
 class CouchDBFile(File):
@@ -81,8 +83,7 @@ class CouchDBStorage(Storage):
             config.update(settings.COUCHDB_STORAGE_OPTIONS)
         config.update(kwargs)
         self.base_url = config.get('server', DEFAULT_SERVER)
-        server = couchdb.client.Server(self.base_url)
-        self.db = server[config.get('database')]
+        self.db = setup_couchdb(self.baseurl, config.get('database'))
 
     def _put_file(self, name, content):
         doc = {}
@@ -125,7 +126,7 @@ class CouchDBStorage(Storage):
         try:
             del self.db[name]
         except couchdb.client.ResourceNotFound:
-            raise IOError("File not found: %s" % name)
+            pass
 
     #def listdir(self, name):
     # _all_docs?

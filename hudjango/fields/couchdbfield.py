@@ -13,6 +13,8 @@ Created by Christian Klein on 2010-02-24.
 from django.db import models
 import couchdb.client
 from uuid import uuid4
+from huTools.couch import setup_couchdb
+
 
 class CouchDBDocument(couchdb.client.Document):
     """CouchDBDocument"""
@@ -32,6 +34,11 @@ class CouchDBDocument(couchdb.client.Document):
     def get_location(self):
         return self.server, self.database, self.id
 
+    def save(self):
+        """Save document to CouchDB"""
+        couchdb =  setup_couchdb(self.server, self.database)
+	couchdb[self.id] = self
+
 
 class CouchDBField(models.CharField):
 
@@ -47,10 +54,10 @@ class CouchDBField(models.CharField):
                 
         super(CouchDBField, self).__init__(**kwargs)
 
-    def _connection(self, server):
+    def _connection(self, server, database=None):
         """Cache connection to CouchDB"""
         if self._couchcon is None:
-            self._couchcon = couchdb.client.Server(server)
+            self._couchcon = setup_couchdb(server, database)
         return self._couchcon
 
     def to_python(self, value):
@@ -58,8 +65,13 @@ class CouchDBField(models.CharField):
         if value == '' or value is None:
             return CouchDBDocument(server=self.server, database=self.database)
         server, database, doc_id = value.split('#')
-        return CouchDBDocument(self._connection(server)[database][doc_id],
-                               server=server, database=database)
+        print ">>>", value
+	try:
+	    doc = CouchDBDocument(self._connection(server, database)[doc_id],
+                                  server=server, database=database)
+	except couchdb.client.ResourceNotFound:
+            doc = None
+        return doc
 
     def get_db_prep_value(self, value):
         """Convert Python object to database value"""
@@ -70,6 +82,7 @@ class CouchDBField(models.CharField):
         
         if not '_id' in value:
             value['_id'] = uuid4().hex
-        server, database, doc_id = value.get_location()
-        self._connection(server)[database][doc_id] = value
+	value.save()
+        #server, database, doc_id = value.get_location()
+        #self._connection(server)[database][doc_id] = value
         return self.get_db_prep_value(value)

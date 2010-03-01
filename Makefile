@@ -42,7 +42,6 @@ coverage: dependencies
 
 build:
 	python setup.py sdist
-	rsync -rvapP dist/* root@cybernetics.hudora.biz:/usr/local/www/data/nonpublic/eggs/
 
 upload: build
 	python setup.py sdist upload
