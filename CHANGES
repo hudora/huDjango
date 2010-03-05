@@ -1,5 +1,6 @@
 CHANGES in huDjango
 
+0.89p2 New CouchDB stuff: CouchDBField and CouchDB template loader
 0.88   format_addressproto() now understands dicts 
 0.87p1 Fix when formating adresses with kundennr set
 0.87   lazy import of huImages - gets rid of always setting up S3-Infrastructure
