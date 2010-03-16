@@ -11,33 +11,59 @@ Created by Christian Klein on 2010-02-24.
 """
 
 from django.db import models
+
 import couchdb.client
 from uuid import uuid4
 from huTools.couch import setup_couchdb
+
+from urlparse import urljoin
+
+
+####################################################
+# put somewhere else...
+from django import forms
+from django.utils.safestring import mark_safe
+
+class CouchDBWidget(forms.widgets.Widget):
+    def render(self, name, value, attrs=None):
+        return mark_safe(u'<input size="64" name="%s" value="%s" />' % (name, value))
+
+class CouchDBFormField(forms.Field):
+    #widget = CouchDBWidget
+    def __init__(self, *args, **kwargs):
+        super(CouchDBFormField, self).__init__(*args, **kwargs)
+        self.widget = CouchDBWidget()
+####################################################
 
 
 class CouchDBDocument(couchdb.client.Document):
     """CouchDBDocument"""
     
-    def __init__(self, *args, **kwargs):
-        
-        try:
-            self.server = kwargs['server']
-            del kwargs['server']
-            self.database = kwargs['database']
-            del kwargs['database']
-        except IndexError:
-            raise ValueError('server and database must not be None')
-        
-        super(CouchDBDocument, self).__init__(*args, **kwargs)
-
+    def __unicode__(self):
+        return urljoin(self.server, '%s/%s' % (self.database, self.id))
+    
+    def set_location(self, server, database):
+        self.server = server
+        self.database = database
+    
     def get_location(self):
         return self.server, self.database, self.id
-
+    
     def save(self):
-        """Save document to CouchDB"""
+        """
+        Save document to CouchDB.
+        
+        If the document exists already, get previous revision and update document
+        """
+        
+        if not (hasattr(self, 'server') or hasattr(self, 'database')):
+            raise RuntimeError("object has not been told where to save!")
+        
         couchdb =  setup_couchdb(self.server, self.database)
-	couchdb[self.id] = self
+        if self.id in couchdb:
+            doc = couchdb[self.id]
+            self.update(doc)
+        couchdb[self.id] = self
 
 
 class CouchDBField(models.CharField):
@@ -45,43 +71,68 @@ class CouchDBField(models.CharField):
     description = "Store id of a CouchDB document"
     
     __metaclass__ = models.SubfieldBase
-
+    
     def __init__(self, server=None, database=None, **kwargs):
-        self.server = server
-        self.database = database
+        self.server, self.database = server, database
         self._couchcon = None
+        
+        # Keep track of CouchDB document id to prevent creation of new documents
+        self.doc_id = None
         kwargs['max_length'] = 256
-                
+        
         super(CouchDBField, self).__init__(**kwargs)
-
-    def _connection(self, server, database=None):
+    
+    def _connection(self, server=None, database=None):
         """Cache connection to CouchDB"""
         if self._couchcon is None:
             self._couchcon = setup_couchdb(server, database)
         return self._couchcon
-
+    
     def to_python(self, value):
         """Convert to Python object"""
+        
         if value == '' or value is None:
-            return CouchDBDocument(server=self.server, database=self.database)
-        server, database, doc_id = value.split('#')
-	try:
-	    doc = CouchDBDocument(self._connection(server, database)[doc_id],
-                                  server=server, database=database)
-	except couchdb.client.ResourceNotFound:
-            doc = None
+            doc = CouchDBDocument()
+        elif isinstance(value, dict):
+            doc = CouchDBDocument(_id=self.doc_id, **value)
+        else:
+            try:
+                server, database, doc_id = value.split('#')
+                doc = CouchDBDocument(self._connection(server, database)[doc_id])
+            except:
+                print "ui!"
+                doc = CouchDBDocument()
+        doc.set_location(self.server, self.database)
         return doc
-
+    
     def get_db_prep_value(self, value):
         """Convert Python object to database value"""
         return "#".join(value.get_location())
     
     def get_db_prep_save(self, value):
-        """Save document to CouchDB when saving Django object"""
+        """
+        Save document to CouchDB when saving Django object.
         
-        if not '_id' in value:
+        If it's a new document, generate an id.
+        """
+        
+        if (not '_id' in value) or (value.get('_id') is None):
             value['_id'] = uuid4().hex
+            self.doc_id = value['_id']
         value.save()
-        #server, database, doc_id = value.get_location()
-        #self._connection(server)[database][doc_id] = value
         return self.get_db_prep_value(value)
+    
+    def contribute_to_class(self, cls, name):
+        super(CouchDBField, self).contribute_to_class(cls, name)
+        models.signals.post_delete.connect(self.delete, sender=cls)
+    
+    def delete(self, **kwargs):
+        """Delete the document from the CouchDB database."""
+        if self.doc_id:
+            doc = self._connection(self.server, self.database)[self.doc_id]
+            self._connection(self.server, self.database).delete(doc)
+    
+    def formfield(self, form_class=CouchDBFormField, **kwargs):
+        defaults = {'required': not self.blank, 'label': self.verbose_name, 'help_text': self.help_text}
+        defaults.update(kwargs)
+        return form_class(**defaults)

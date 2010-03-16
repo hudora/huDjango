@@ -9,7 +9,8 @@ from django.utils._os import safe_join
 from urlparse import urljoin
 import logging
 
-def setup_couchdb(servername, database):
+
+def _setup_couchdb(servername, database):
     """Get a connection handler to the CouchDB Database, creating it when needed."""
     
     server = couchdb.client.Server(servername)
