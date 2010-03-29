@@ -7,6 +7,7 @@ Created by Christian Klein on 2010-03-26.
 Copyright (c) 2007 HUDORA GmbH. All rights reserved.
 """
 
+from functools import wraps
 from django.http import HttpResponse
 import simplejson as json
 
