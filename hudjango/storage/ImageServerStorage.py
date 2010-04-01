@@ -41,7 +41,8 @@ class ImageServerStorage(CouchDBStorage):
     
     def delete(self, name):
         """Delete an Image - not implemented so far."""
-        # OR: ignore silently?
-        raise NotImplementedError("ImageServerStorage is not intended to support delete()")
-    
-    # Storage.listdir()
+        pass
+        
+    def listdir(self, path):
+        """List a directory - not supported by this storage engine"""
+        pass
