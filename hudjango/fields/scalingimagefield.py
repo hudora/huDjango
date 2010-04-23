@@ -230,10 +230,9 @@ class ScalingImageField(ImageField):
     '/,/-/product/image/0e99d6be8ec0259df920c2d273d1ad6f.jpg/svga.jpeg'
     """
 
-    def __init__(self, verbose_name=None, name=None, width_field=None, height_field=None, auto_rename=True,
-                 **kwargs):
-        """Inits the ScalingImageField."""
-        super(ScalingImageField, self).__init__(verbose_name, name, width_field, height_field, **kwargs)
+    def __init__(self, verbose_name=None, name=None, width_field=None, height_field=None, **kwargs):
+        """Initializes the ScalingImageField."""
+        super(ScalingImageField, self).__init__(verbose_name=None, name=None, width_field=width_field, height_field=height_field, **kwargs)
 
     def contribute_to_class(self, cls, name):
         """Adds field-related functions to the model."""
@@ -242,3 +241,11 @@ class ScalingImageField(ImageField):
 
     def get_internal_type(self):
         return 'FileField'
+
+
+# For Django South introspection:
+try:
+    from south.modelsinspector import add_introspection_rules
+    add_introspection_rules([], ["^hudjango\.fields\.scalingimagefield\.ScalingImageField"])
+except ImportError:
+    pass

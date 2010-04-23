@@ -1,5 +1,6 @@
 CHANGES in huDjango
 
+0.90p2 Django South introspections for fields
 0.90p1 action typt in log_action can now be a string
 0.90   decorators.ajax_request()
 0.89p2 New CouchDB stuff: CouchDBField and CouchDB template loader
