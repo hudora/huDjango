@@ -7,8 +7,12 @@ Created by Maximillian Dornseif on 2010-05-04.
 Copyright (c) 2010 HUDORA. All rights reserved.
 """
 
+from boto.s3.key import Key
 from storages.backends import s3boto
 import hashlib
+import mimetypes
+import os
+
 
 class DedupingS3storage(s3boto.S3BotoStorage):
     """Based on S3BotoStorage this ensures that similar files are only saved once.
