@@ -33,7 +33,7 @@ class DedupingS3storage(s3boto.S3BotoStorage):
             'Content-Length' : len(content),
         })
         
-        newname = hashlib.sha1(content).hexdigest()
+        newname = hashlib.sha1(str(content)).hexdigest()
         content.name = newname
         k = self.bucket.get_key(newname)
         if not k:
