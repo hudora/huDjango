@@ -34,21 +34,25 @@ class DedupingS3storage(s3boto.S3BotoStorage):
         })
         
         newname = hashlib.sha1(str(content)).hexdigest()
+        newname = newname + mimetypes.guess_extension(content_type)
         content.name = newname
         k = self.bucket.get_key(newname)
         if not k:
             k = self.bucket.new_key(newname)
             k.set_metadata('original_filename', name)
         k.set_contents_from_file(content, headers=headers, policy=self.acl)
+        print newname, content_type
         return newname
-    
+
     def delete(self, name):
         pass
 
     def url(self, name):
         name = self._clean_name(name)
+        print name
         s3url = self.connection.generate_url(QUERYSTRING_EXPIRE, method='GET', \
                 bucket=self.bucket.name, key=name, query_auth=QUERYSTRING_AUTH)
         if self.acl == 'public-read':
             s3url = s3url.split('?')[0]
+        print s3url
         return s3url
