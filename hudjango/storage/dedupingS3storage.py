@@ -10,7 +10,7 @@ Copyright (c) 2010 HUDORA. All rights reserved.
 from storages.backends import s3boto
 import hashlib
 
-class DedupingS3(s3boto.S3BotoStorage):
+class DedupingS3storage(s3boto.S3BotoStorage):
     """Based on S3BotoStorage this ensures that similar files are only saved once.
     
     Does NOT support deletion of files."""
