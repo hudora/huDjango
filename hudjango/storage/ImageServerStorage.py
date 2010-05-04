@@ -5,7 +5,7 @@ Created by Christian Klein.
 """
 
 from hudjango.storage.CouchDBStorage import CouchDBStorage
-huimages = None # lazy import, see ImageServerStorage.__init__()
+huimages = None  # lazy import, see ImageServerStorage.__init__()
 
 
 class ImageServerStorage(CouchDBStorage):
