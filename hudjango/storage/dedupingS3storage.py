@@ -48,10 +48,7 @@ class DedupingS3storage(s3boto.S3BotoStorage):
         pass
 
     def url(self, name):
-        name = self._clean_name(name)
-        print name
-        s3url = self.connection.generate_url(QUERYSTRING_EXPIRE, method='GET', \
-                bucket=self.bucket.name, key=name, query_auth=QUERYSTRING_AUTH)
+        s3url = super(DedupingS3storage, self).url(name)
         if self.acl == 'public-read':
             s3url = s3url.split('?')[0]
         print s3url
