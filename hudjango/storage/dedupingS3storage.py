@@ -10,7 +10,7 @@ Copyright (c) 2010 HUDORA. All rights reserved.
 from storages.backends import s3boto
 import hashlib
 
-class dedupingS3(s3boto.S3BotoStorage):
+class DedupingS3(s3boto.S3BotoStorage):
     """Based on S3BotoStorage this ensures that similar files are only saved once.
     
     Does NOT support deletion of files."""
@@ -34,6 +34,7 @@ class dedupingS3(s3boto.S3BotoStorage):
         k = self.bucket.get_key(newname)
         if not k:
             k = self.bucket.new_key(newname)
+            k.set_metadata('original_filename', name)
         k.set_contents_from_file(content, headers=headers, policy=self.acl)
         return newname
     
