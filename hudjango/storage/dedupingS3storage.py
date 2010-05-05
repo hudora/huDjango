@@ -15,7 +15,7 @@ import os
 
 def _compute_hash(fp):
     BufferSize = 4096*100
-    m = hashlib.sha224()
+    m = hashlib.md5()
     fp.seek(0)
     s = fp.read(BufferSize)
     while s:
