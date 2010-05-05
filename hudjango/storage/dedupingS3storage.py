@@ -13,6 +13,17 @@ import hashlib
 import mimetypes
 import os
 
+def _compute_hash(fp):
+    BufferSize = 4096*100
+    m = hashlib.sha224()
+    fp.seek(0)
+    s = fp.read(BufferSize)
+    while s:
+        m.update(s)
+        s = fp.read(BufferSize)
+    fp.seek(0)
+    return m.digest().encode('base64').replace('/', 'H').replace('+', 'D').strip('\n=')
+    
 
 class DedupingS3storage(s3boto.S3BotoStorage):
     """Based on S3BotoStorage this ensures that similar files are only saved once.
@@ -33,7 +44,7 @@ class DedupingS3storage(s3boto.S3BotoStorage):
             'Content-Length' : len(content),
         })
         
-        newname = hashlib.sha1(str(content)).hexdigest()
+        newname = _compute_hash(content)
         newname = newname + mimetypes.guess_extension(content_type)
         content.name = newname
         k = self.bucket.get_key(newname)
