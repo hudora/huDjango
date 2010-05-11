@@ -46,7 +46,7 @@ class DedupingS3storage(s3boto.S3BotoStorage):
         
         newname = _compute_hash(content)
         extension =  mimetypes.guess_extension(content_type)
-        if extensiona:
+        if extension:
             newname = newname + extension
         content.name = newname
         k = self.bucket.get_key(newname)

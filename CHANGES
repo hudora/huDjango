@@ -1,5 +1,6 @@
 CHANGES in huDjango
 
+0.91p4 Bugfix
 0.91p3 graceful handling of failure to detect content type
 0.91   dedupingS3storage.DedupingS3storage.py dtores file in S3 merging duplicate files
 0.90p1 action typt in log_action can now be a string
