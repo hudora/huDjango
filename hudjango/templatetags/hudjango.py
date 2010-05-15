@@ -271,6 +271,7 @@ def g2kg(value):
     Example::
     
         {% 1000|g2kg %} results in 1
+        {% 422|g2kg %} results in 0.4
     """
     
     try:
@@ -279,7 +280,12 @@ def g2kg(value):
         return value
     except TypeError:
         return value
+    if value < 100:
+        return mark_safe('0.1')
+    if value < 1000:
+        return mark_safe('0.%d' % int(value/100))
     return mark_safe('%d' % int(value/1000))
+    
 
 
 def _cond_helper(func, arguments):

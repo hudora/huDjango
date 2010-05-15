@@ -1,5 +1,6 @@
 CHANGES in huDjango
 
+0.91p5 Bugfix: g2kg templatetag stops displaying '0' for values < 1000
 0.91p4 Bugfix
 0.91p3 graceful handling of failure to detect content type
 0.91   dedupingS3storage.DedupingS3storage.py dtores file in S3 merging duplicate files
