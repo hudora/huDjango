@@ -8,6 +8,7 @@ Copyright (c) 2006-2008 HUDORA GmbH. Consider it BSD licensed.
 """
 
 import operator
+import re
 import urllib
 from django import template
 from django.template import resolve_variable
@@ -20,6 +21,7 @@ huimages = None # lazy import, see ImageLink.__init__()
 register = template.Library()
 
 
+# TODO: move to myplfrontend
 @register.filter
 def format_location(value, dummy):
     """
@@ -42,6 +44,20 @@ def slashencode(value):
     """
     
     return urllib.quote(value, '')
+
+
+@register.filter
+def format_tel(obj, autoescape=None):
+    """Formats a Phone Number as tel: URI."""
+    if autoescape:
+        esc = conditional_escape
+    else:
+        esc = lambda x: x
+    cleantel = re.sub('[^0-9+]+', '', str(obj))
+    if cleantel.strartswith('+'):
+        cleantel = "00%s" % cleantel.replace('+', '')
+    return mark_safe('<a href="tel:%s">%s</span>' % (esc(cleantel), esc(obj)))
+format_tel.needs_autoescape = True
 
 
 @register.filter
@@ -255,6 +271,7 @@ def g2kg(value):
     Example::
     
         {% 1000|g2kg %} results in 1
+        {% 422|g2kg %} results in 0.4
     """
     
     try:
@@ -263,7 +280,12 @@ def g2kg(value):
         return value
     except TypeError:
         return value
+    if value < 100:
+        return mark_safe('0.1')
+    if value < 1000:
+        return mark_safe('0.%d' % int(value/100))
     return mark_safe('%d' % int(value/1000))
+    
 
 
 def _cond_helper(func, arguments):
@@ -400,6 +422,7 @@ class ImageLink(template.Node):
     """Helper class for rendering do_imageid()."""
     
     def __init__(self, obj, options):
+        # lazy import
         global huimages
         if huimages is None:
             import huimages

@@ -1,11 +1,11 @@
 Django
 setuptools
 xlwt
-CouchDB>=0.6.1
+couchdb>=0.7
 http://effbot.org/downloads/Imaging-1.1.7.tar.gz
+django-storages
 # the following are optional actually Django requirements, but we include them here so any
 # application using huDjango can benefit from them
-PyYAML
 Markdown
 Textile
 Docutils

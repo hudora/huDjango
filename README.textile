@@ -17,6 +17,9 @@ You can get huDjango at the "Python Cheeseshop":http://pypi.python.org/pypi/huDj
 
 h2. Changes 
 
+ * 0.91: dedupingS3storage.DedupingS3storage.py dtores file in S3 merging duplicate files
+ * 0.90: decorators.ajax_request(), New CouchDB stuff: CouchDBField and CouchDB template loader
+ * 0.88: format_addressproto() now understands dicts 
  * 0.86: added serializers.queryset_to_xls, fixes for require_login and ZimbraBackend
  * 0.85: deUmlaut template filter
  * 0.84: format_addressproto,  more robust clienttracking, don't generate links for empty image IDs, fixed {% imageid ... urlonly %} templatetag
