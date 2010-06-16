@@ -1,21 +1,23 @@
 # encoding: utf-8
 
 import couchdb
-from hudjango.management.commands.couchdbcommand import CouchDBCommand
+from hudjango.management.couchdb.support import CouchDBBaseCommand
 from django.core.management.base import CommandError
 
 
-class Command(CouchDBCommand):
-    help = """Drop a couchdb database"""
+class Command(CouchDBBaseCommand):
+    help = """ Drop an existing couchdb database. """
 
     def handle(self, *args, **options):
+        # get the name of the database to create
         if len(args) != 1:
             raise CommandError("You need to specify exactly one argument as database name")
         database = args[0]
-        server = couchdb.client.Server(options['server'])
-        try:
-            server.delete(database)
-        except couchdb.client.ResourceNotFound:
-            pass
 
-        print "Database '%s' dropped succesfully" % database
+        # drop a possibly existing database if the user wants us to.
+        couch = self._server(options)
+        try:
+            couch.delete(database)
+            print "database '%s' deleted succesfully" % database
+        except couchdb.client.ResourceNotFound:
+            print "unable to delete deleting database '%s'!" % database
