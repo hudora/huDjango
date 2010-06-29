@@ -1,5 +1,6 @@
 CHANGES in huDjango
 
+0.93   ReadOnly widget for forms
 0.92   Django South introspections for fields
 0.91p5 Bugfix: g2kg templatetag stops displaying '0' for values < 1000
 0.91p4 Bugfix
