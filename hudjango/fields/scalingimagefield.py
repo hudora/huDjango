@@ -56,6 +56,7 @@ from django.db.models import ImageField
 from django.utils.functional import curry
 from django.utils.html import escape 
 from django.utils.safestring import mark_safe 
+import huimages
 
 _sizes = {'mini': "23x40",
           'thumb': "50x200", 
@@ -152,9 +153,20 @@ class Imagescaler(object):
         self.mangled_name = str(self.original_image) # md5.new('sehkr1tt-%s-%r-%r' % (str(self.original_image), time.time(), id(self))).hexdigest()
         self.scaled_image_base = os.path.join(settings.MEDIA_ROOT, ',', self.mangled_name)
         self.broken_image = None
+
+        # imageid is used for webstorage
+        self.imageid = None
+
         # if broken.gif exists we send that if there are any problems during scaling
         if not os.path.exists(self.original_image_path):
-            self.broken_image = os.path.join(settings.MEDIA_ROOT, 'broken.gif') 
+            # check if we are using web based storage
+            imageid = str(self.original_image)
+            if imageid in huimages._setup_couchdb():
+                self.original_image_path = huimages.imageurl(imageid)
+                self.imageid = imageid
+            else:
+                self.broken_image = os.path.join(settings.MEDIA_ROOT, 'broken.gif') 
+
         for size in _sizes:
             setattr(self, '%s_path' % (size), curry(self.scaled_filename, size))
             setattr(self, '%s' % (size), curry(self.scaled_url, size))
@@ -163,6 +175,10 @@ class Imagescaler(object):
 
     def scaled_filename(self, size='thumb'):
         """Scales an image according to 'size' and returns the filename of the scaled image."""
+
+        if self.imageid:
+            return huimages.scaled_imageurl(self.imageid, size)
+        
         if self.broken_image:
             return self.broken_image
         outpath = "%s_%s.jpeg" % (self.scaled_image_base, size)
@@ -184,6 +200,10 @@ class Imagescaler(object):
 
     def scaled_url(self, size='thumb'):
         """Scales an image according to 'size' and returns the URL of the scaled image."""
+
+        if self.imageid:
+            return huimages.imageurl(self.imageid, size)
+
         if not self.original_image:
             return ''
         outpath = self.scaled_filename(size)
@@ -194,6 +214,10 @@ class Imagescaler(object):
     
     def scaled_dimensions(self, size='thumb'):
         """Scales an image according to 'size' and returns the dimensions."""
+
+        if self.imageid:
+            return scaled_dimensions(self.imageid, size)
+        
         if not self.original_image:
             return None
         if size.endswith('!'):
@@ -208,6 +232,10 @@ class Imagescaler(object):
         >>> img.path_scaled().svga_tag(alt='neu')
         '<img src="/,/-/product/image/0ead6f.jpg/svga.jpeg" width="328" height="600" alt="neu"/>'
         """
+
+        if self.imageid:
+            return scaled_tag(self.imageid, size)
+
         if not self.original_image:
             return ''
         ret = ['<img src="%s"' % escape(self.scaled_url(size))]
