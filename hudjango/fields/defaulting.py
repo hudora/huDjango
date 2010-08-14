@@ -28,8 +28,9 @@ class DefaultingCharField(models.CharField):
         if not self.default_from_field:
             return
         if not getattr(instance, self.attname):
-            if len(getattr(instance, self.default_from_field)) <= self.max_length:
-                setattr(instance, self.attname, instance.name)
+            value = getattr(instance, self.default_from_field)
+            if value and len(value) <= self.max_length:
+                setattr(instance, self.attname, value)
     
     def contribute_to_class(self, cls, name):
         """Adds a pre_save signal handler to ensure we can set the defaults before beeing saved."""
@@ -38,14 +39,11 @@ class DefaultingCharField(models.CharField):
     
     def get_internal_type(self):
         return 'CharField'
-    
-#class untitled:
-#    def __init__(self):
-#        pass
 
-#class untitledTests(unittest.TestCase):
-#    def setUp(self):
-#        pass
 
-#if __name__ == '__main__':
-#    unittest.main()
+# For Django South introspection:
+try:
+    from south.modelsinspector import add_introspection_rules
+    add_introspection_rules([], ["^hudjango\.fields\.defaulting\.DefaultingCharField"])
+except ImportError:
+    pass
