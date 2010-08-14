@@ -13,14 +13,14 @@ from django.utils.encoding import smart_unicode
 class PrinterChooser(object):
     """PrinterChooser allows the user in a HTML form to choose a printer. It remembers the choice.
     PrinterChooser() must be initialized with
-    
+
     * A Django Request Object
     * A list of possible printer names. The first name is the default choice.
     * An optional identifier if you want to use PrinterChooser() for different kinds of printers.
       We use 'a4', 'a4color' and 'label'.
-    
+
     To use it your view must be structured like this:
-    
+
         def myview(request):
             printer = PrinterChooser(request, ('DruckerErikBloodaxe', 'DruckerNapster'), 'label')
             ...
@@ -30,17 +30,17 @@ class PrinterChooser(object):
                                           context_instance=RequestContext(request))
             populate_xheaders(request, response, Sendung, lieferung.id)
             return printer.update_response(response)
-            
-        
+
+
     In your template do:
-    
+
         {% load hudjango %}
         ...
         <form ...>
         {% printer_choice %}
         ...
         </form>
-        
+
     See http://static.23.nu/md/Pictures/ZZ5FB43EF0.png for an example.
     """
 
@@ -103,11 +103,11 @@ def log_action(obj, action, user=None, message='', reprstr=None):
      * reprstr: a representation of the object
     """
     # from https://svn.python.org/conference/django/trunk/pycon/propmgr/changelog.py
-    
+
     actions = {'ADDITION': ADDITION, 'CHANGE': CHANGE, 'DELETION': DELETION}
     if isinstance(action, basestring):
         action = actions[action]
-    
+
     content_type = ContentType.objects.get_for_model(type(obj))
     if user is None:
         try:
@@ -117,7 +117,7 @@ def log_action(obj, action, user=None, message='', reprstr=None):
             uid = 1
     else:
         uid = user.id
-    
+
     if reprstr is None:
         reprstr = smart_unicode(repr(obj))
     else:
