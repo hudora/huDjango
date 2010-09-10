@@ -4,9 +4,11 @@ See http://www.djangoproject.com/ and https://cybernetics.hudora.biz/projects/wi
 """
 
 import datetime
+from django.conf import settings
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from django.shortcuts import _get_queryset
 from django.utils.encoding import smart_unicode
 
 
@@ -123,3 +125,21 @@ def log_action(obj, action, user=None, message='', reprstr=None):
     else:
         reprstr = smart_unicode(reprstr)
     LogEntry.objects.log_action(uid, content_type.id, obj.id, reprstr, action, message)
+
+
+def get_object_or_None(klass, *args, **kwargs):
+    """
+    Uses get() to return an object or None if the object does not exist.
+
+    klass may be a Model, Manager, or QuerySet object. All other passed
+    arguments and keyword arguments are used in the get() query.
+
+    Note: Like with get(), an MultipleObjectsReturned will be raised if more than one
+    object is found.
+    """
+    # This function is extracted from http://bitbucket.org/offline/django-annoying
+    queryset = _get_queryset(klass)
+    try:
+        return queryset.get(*args, **kwargs)
+    except queryset.model.DoesNotExist:
+        return None

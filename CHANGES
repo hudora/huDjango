@@ -1,5 +1,6 @@
 CHANGES in huDjango
 
+0.95   get_object_or_None() from django_annoying added
 0.94   ScalingImagefield: Support for huImages
 0.93   ReadOnly widget for forms
 0.92   Django South introspections for fields
