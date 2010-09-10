@@ -75,12 +75,11 @@ def queryset_to_xls(queryset, fields=None, headings=None):
         linktext = unicode(obj).replace('"', '') # Extremly curude but get's the job done
         row = [xlwt.Formula('HYPERLINK("%s";"%s")' % (absurl, linktext))]
         for name in fields:
-            if hasattr(getattr(obj, name), '__call__'):
-                # call 'name' is possible ...
-                row.append(getattr(obj, name)())
-            else:
-                # if not, use value
-                row.append(getattr(obj, name))
+            attr = getattr(obj, name)
+            # If attribute is callable, replace with its return value
+            if callable(attr):
+                attr = attr()
+            row.append(attr)
         pos_row = _write_row(worksheet, row, pos_row)
     pos_row = _write_row(worksheet, [u'Stand:', unicode(datetime.datetime.now())], pos_row)
 
