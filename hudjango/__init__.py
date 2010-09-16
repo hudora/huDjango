@@ -124,7 +124,7 @@ def log_action(obj, action, user=None, message='', reprstr=None):
         reprstr = smart_unicode(repr(obj))
     else:
         reprstr = smart_unicode(reprstr)
-    LogEntry.objects.log_action(uid, content_type.id, obj.id, reprstr, action, message)
+    LogEntry.objects.log_action(uid, content_type.id, obj.pk, reprstr, action, message)
 
 
 def get_object_or_None(klass, *args, **kwargs):
