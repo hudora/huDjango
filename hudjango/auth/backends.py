@@ -40,19 +40,22 @@ class EmailBackend(django.contrib.auth.backends.ModelBackend):
     def authenticate(self, username=None, password=None):
         """Authenticate a user with password."""
         
+        if username is None:
+            return None
+        
         # our auth strategy
         try:
-            # 1. see if we find a user object with that username
+            # 1st see if we find a user object with that username
             user = User.objects.get(username=username)
             if user.check_password(password):
                 return user
-        except User.DoesNotExist:
-            # 2. see if we find a user object with that email adress
-            users = User.objects.filter(email=username)
-            if len(users) == 1 and users[0].check_password(password):
-                return users[0]
+        except User.DoesNotExist:            
+            # 2nd see if we find a user object with that email adress
+            for user in User.objects.filter(email=username.lower()):
+                if user.check_password(password):
+                    return user
         return None
-    
+
 
 class ZimbraBackend(django.contrib.auth.backends.ModelBackend):
     """
