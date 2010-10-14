@@ -22,7 +22,6 @@ Created by Maximillian Dornseif on 2008-02-28.
 Copyright (c) 2008 HUDORA. All rights reserved.
 """
 
-import ldap
 from django.conf import settings 
 from django.contrib.auth.models import User
 import django.contrib.auth.backends
@@ -86,10 +85,8 @@ class ZimbraBackend(django.contrib.auth.backends.ModelBackend):
         
         Might also create the user in the Django User DB.
         """
-        
-        servername = 'mail.hudora.biz'
-        if hasattr(settings, 'LDAP_SERVER_NAME'):
-            servername = settings.LDAP_SERVER_NAME
+        import ldap
+        servername = getattr(settings, 'LDAP_SERVER_NAME', 'mail.hudora.biz')        
         lconn = ldap.open(servername)
         lconn.protocol_version = ldap.VERSION3
         result_id = lconn.search('', ldap.SCOPE_SUBTREE, 'mail=%s' % (username, ),
