@@ -160,10 +160,9 @@ class Imagescaler(object):
         # if broken.gif exists we send that if there are any problems during scaling
         if not os.path.exists(self.original_image_path):
             # check if we are using web based storage
-            imageid = str(self.original_image)
-            if imageid in huimages._setup_couchdb():
-                self.original_image_path = huimages.imageurl(imageid)
-                self.imageid = imageid
+            self.imageid = str(self.original_image)
+            if self.imageid in huimages._setup_couchdb():
+                self.original_image_path = huimages.imageurl(self.imageid)
             else:
                 self.broken_image = os.path.join(settings.MEDIA_ROOT, 'broken.gif') 
 
